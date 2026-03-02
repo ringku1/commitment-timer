@@ -361,7 +361,7 @@ function autoBreakSession(tabId) {
               if (el) el.textContent = count;
               if (count <= 0) {
                 clearInterval(interval);
-                window.location.href = "about:blank";
+                window.location.reload();
               }
             }, 1000);
           },
