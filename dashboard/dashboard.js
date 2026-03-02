@@ -27,7 +27,7 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
   document.getElementById("honesty-label").textContent =
     score + "% follow-through";
 
-  // Calendar — last 30 days
+  // Calendar
   const calendar = document.getElementById("calendar");
   const dayMap = {};
   sessions.forEach((s) => {
@@ -56,9 +56,22 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
 
   // Session list
   const list = document.getElementById("session-list");
-  if (sessions.length === 0) return;
 
-  list.innerHTML = "";
+  if (sessions.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔒</div>
+        <div class="empty-title">No sessions yet</div>
+        <div class="empty-text">
+          Visit <strong>youtube.com</strong> or any blocked site<br/>
+          to make your first commitment.<br/><br/>
+          Your history will appear here.
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   sessions.forEach((s) => {
     const date = new Date(s.timestamp).toLocaleDateString("en-US", {
       month: "short",
@@ -78,7 +91,8 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
         <span class="session-badge ${s.keptPromise ? "badge-kept" : "badge-broke"}">
           ${s.keptPromise ? "✅ Kept" : "❌ Broke"}
         </span>
-        <div class="session-time">${date}</div>
+        ${s.snoozeCount > 0 ? `<div class="session-snooze">⏸️ Snoozed ${s.snoozeCount}x</div>` : ""}
+        <div class="session-time" style="margin-top:3px">${date}</div>
       </div>
     `;
     list.appendChild(card);

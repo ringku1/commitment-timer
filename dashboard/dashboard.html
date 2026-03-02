@@ -10,7 +10,7 @@
         padding: 0;
       }
       body {
-        background: #0a0a0f;
+        background: #070b14;
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         color: #ffffff;
@@ -24,7 +24,7 @@
         margin-bottom: 4px;
       }
       .sub {
-        color: #8888aa;
+        color: #7aa0c0;
         font-size: 14px;
         margin-bottom: 32px;
       }
@@ -37,8 +37,8 @@
       }
 
       .streak-card {
-        background: linear-gradient(135deg, #1e1340, #13131a);
-        border: 1px solid #6366f1;
+        background: linear-gradient(135deg, #0a1a30, #0d1526);
+        border: 1px solid #0ea5e9;
         border-radius: 12px;
         padding: 24px 20px;
         text-align: center;
@@ -46,6 +46,9 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        box-shadow:
+          0 0 30px #0ea5e920,
+          0 0 80px #0ea5e910;
       }
       .streak-fire {
         font-size: 40px;
@@ -54,21 +57,22 @@
       .streak-num {
         font-size: 52px;
         font-weight: 900;
-        color: #a78bfa;
+        color: #06b6d4;
         line-height: 1;
+        text-shadow: 0 0 30px #06b6d460;
       }
       .streak-label {
         font-size: 13px;
-        color: #8888aa;
+        color: #7aa0c0;
         margin-top: 4px;
       }
       .streak-best {
         font-size: 12px;
-        color: #55556a;
+        color: #334d6a;
         margin-top: 8px;
       }
       .streak-best span {
-        color: #6366f1;
+        color: #0ea5e9;
         font-weight: 700;
       }
 
@@ -78,8 +82,8 @@
         gap: 10px;
       }
       .stat-card {
-        background: #13131a;
-        border: 1px solid #2a2a3a;
+        background: #0d1526;
+        border: 1px solid #1a2d4a;
         border-radius: 12px;
         padding: 16px;
         text-align: center;
@@ -87,136 +91,203 @@
       .stat-value {
         font-size: 28px;
         font-weight: 800;
-        color: #6366f1;
+        color: #0ea5e9;
+        text-shadow: 0 0 12px #0ea5e940;
       }
       .stat-label {
         font-size: 12px;
-        color: #8888aa;
+        color: #7aa0c0;
         margin-top: 4px;
       }
 
       .honesty-wrap {
-        background: #13131a;
-        border: 1px solid #2a2a3a;
+        background: #0d1526;
+        border: 1px solid #1a2d4a;
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 32px;
       }
-      .honesty-label {
-        font-size: 12px;
-        color: #8888aa;
-        margin-bottom: 8px;
+      .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334d6a;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
       }
       .honesty-bar-bg {
-        background: #1e1e2e;
+        background: #0a1220;
         border-radius: 99px;
         height: 12px;
         overflow: hidden;
         margin-bottom: 8px;
       }
       .honesty-bar {
-        background: linear-gradient(90deg, #6366f1, #a78bfa);
+        background: linear-gradient(90deg, #0369a1, #06b6d4);
         height: 100%;
         border-radius: 99px;
         transition: width 0.8s;
+        box-shadow: 0 0 10px #06b6d450;
       }
       .honesty-score {
         font-size: 20px;
         font-weight: 800;
-        color: #a78bfa;
+        color: #06b6d4;
+        text-shadow: 0 0 16px #06b6d440;
       }
 
-      .section-title {
-        font-size: 13px;
-        font-weight: 600;
-        color: #8888aa;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 12px;
+      /* Calendar */
+      .calendar-wrap {
+        margin-bottom: 32px;
       }
+      .calendar {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+      .cal-day {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #334d6a;
+        font-weight: 600;
+        transition: transform 0.1s;
+      }
+      .cal-day:hover {
+        transform: scale(1.2);
+        cursor: default;
+      }
+      .cal-kept {
+        background: #0c3b2e;
+        border: 1px solid #10b981;
+        color: #10b981;
+        box-shadow: 0 0 8px #10b98130;
+      }
+      .cal-broke {
+        background: #2a0a0a;
+        border: 1px solid #ef4444;
+        color: #ef4444;
+        box-shadow: 0 0 8px #ef444430;
+      }
+      .cal-empty {
+        background: #0d1526;
+        border: 1px solid #1a2d4a;
+      }
+
+      /* Calendar legend */
+      .cal-legend {
+        display: flex;
+        gap: 16px;
+        margin-top: 10px;
+        margin-bottom: 32px;
+      }
+      .cal-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #334d6a;
+      }
+      .cal-legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+      }
+
+      /* Sessions */
       .session-list {
         display: flex;
         flex-direction: column;
         gap: 10px;
       }
       .session-card {
-        background: #13131a;
-        border: 1px solid #2a2a3a;
+        background: #0d1526;
+        border: 1px solid #1a2d4a;
         border-radius: 12px;
         padding: 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
+        transition: border-color 0.2s;
+      }
+      .session-card:hover {
+        border-color: #0ea5e9;
       }
       .session-left {
         flex: 1;
       }
       .session-site {
-        font-size: 13px;
-        color: #8888aa;
+        font-size: 12px;
+        color: #334d6a;
         margin-bottom: 4px;
       }
       .session-intention {
-        font-size: 15px;
-        color: #ccccdd;
+        font-size: 14px;
+        color: #c0d8f0;
       }
       .session-right {
         text-align: right;
+        flex-shrink: 0;
       }
       .session-time {
-        font-size: 13px;
-        color: #8888aa;
+        font-size: 12px;
+        color: #334d6a;
+        margin-bottom: 4px;
       }
       .session-badge {
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
-        padding: 4px 10px;
+        padding: 3px 10px;
         border-radius: 99px;
-        margin-top: 4px;
         display: inline-block;
       }
       .badge-kept {
-        background: #166534;
-        color: #4ade80;
+        background: #0c3b2e;
+        border: 1px solid #10b981;
+        color: #10b981;
       }
       .badge-broke {
-        background: #7f1d1d;
-        color: #f87171;
+        background: #2a0a0a;
+        border: 1px solid #ef4444;
+        color: #ef4444;
       }
-      .empty {
-        text-align: center;
-        color: #55556a;
-        padding: 40px;
+      .session-snooze {
+        font-size: 11px;
+        color: #334d6a;
+        margin-top: 3px;
       }
 
-      /* Streak calendar */
-      .calendar {
-        display: flex;
-        gap: 4px;
-        flex-wrap: wrap;
-        margin-bottom: 32px;
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #0d1526;
+        border: 1px dashed #1a2d4a;
+        border-radius: 16px;
       }
-      .cal-day {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 10px;
-        color: #55556a;
+      .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        filter: drop-shadow(0 0 12px #0ea5e940);
       }
-      .cal-kept {
-        background: #166534;
-        color: #4ade80;
+      .empty-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 8px;
       }
-      .cal-broke {
-        background: #7f1d1d;
-        color: #f87171;
+      .empty-text {
+        font-size: 14px;
+        color: #334d6a;
+        line-height: 1.6;
       }
-      .cal-empty {
-        background: #1e1e2e;
+      .empty-text strong {
+        color: #06b6d4;
       }
     </style>
   </head>
@@ -226,7 +297,7 @@
 
     <div class="top-grid">
       <div class="streak-card">
-        <div class="streak-fire" id="streak-emoji">🔥</div>
+        <div class="streak-fire" id="streak-emoji">💤</div>
         <div class="streak-num" id="streak-num">0</div>
         <div class="streak-label">day streak</div>
         <div class="streak-best">
@@ -250,22 +321,43 @@
     </div>
 
     <div class="honesty-wrap">
-      <p class="honesty-label">Overall Honesty</p>
+      <p class="section-title">Overall Honesty</p>
       <div class="honesty-bar-bg">
         <div class="honesty-bar" id="honesty-bar" style="width: 0%"></div>
       </div>
       <div class="honesty-score" id="honesty-label">0% follow-through</div>
     </div>
 
-    <p class="section-title">Last 30 Days</p>
-    <div class="calendar" id="calendar"></div>
-
-    <p class="section-title">Recent Sessions</p>
-    <div class="session-list" id="session-list">
-      <div class="empty">
-        No sessions yet. Start browsing to track commitments.
+    <div class="calendar-wrap">
+      <p class="section-title">Last 30 Days</p>
+      <div class="calendar" id="calendar"></div>
+      <div class="cal-legend">
+        <div class="cal-legend-item">
+          <div
+            class="cal-legend-dot"
+            style="background: #0c3b2e; border: 1px solid #10b981"
+          ></div>
+          Kept promise
+        </div>
+        <div class="cal-legend-item">
+          <div
+            class="cal-legend-dot"
+            style="background: #2a0a0a; border: 1px solid #ef4444"
+          ></div>
+          Broke promise
+        </div>
+        <div class="cal-legend-item">
+          <div
+            class="cal-legend-dot"
+            style="background: #0d1526; border: 1px solid #1a2d4a"
+          ></div>
+          No session
+        </div>
       </div>
     </div>
+
+    <p class="section-title">Recent Sessions</p>
+    <div class="session-list" id="session-list"></div>
 
     <script src="dashboard.js"></script>
   </body>
