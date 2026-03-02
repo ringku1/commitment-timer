@@ -9,63 +9,231 @@
         padding: 0;
       }
       body {
-        width: 280px;
+        width: 300px;
         background: #070b14;
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         color: #ffffff;
         padding: 20px;
       }
-      .header {
+
+      /* ─── ONBOARDING ─── */
+      #onboarding {
+        display: none;
+      }
+      .ob-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .ob-icon {
+        font-size: 40px;
+        filter: drop-shadow(0 0 12px #0ea5e9);
+        margin-bottom: 10px;
+      }
+      .ob-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 4px;
+      }
+      .ob-sub {
+        font-size: 13px;
+        color: #7aa0c0;
+      }
+
+      .ob-steps {
         display: flex;
-        align-items: center;
+        flex-direction: column;
         gap: 10px;
         margin-bottom: 20px;
       }
+      .ob-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: #0d1526;
+        border: 1px solid #1a2d4a;
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .ob-step-num {
+        background: linear-gradient(135deg, #0369a1, #0891b2);
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: #fff;
+        box-shadow: 0 0 10px #0ea5e940;
+      }
+      .ob-step-text {
+        font-size: 13px;
+        color: #c0d8f0;
+        line-height: 1.5;
+      }
+      .ob-step-text strong {
+        color: #06b6d4;
+      }
+
+      .ob-sites {
+        background: #0d1526;
+        border: 1px solid #1a2d4a;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 20px;
+      }
+      .ob-sites-label {
+        font-size: 11px;
+        color: #334d6a;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .ob-sites-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .ob-site-tag {
+        background: #0a1220;
+        border: 1px solid #1a2d4a;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+        color: #7aa0c0;
+      }
+
+      .ob-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #0369a1, #0891b2);
+        border: 1px solid #0ea5e9;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        padding: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 0 20px #0ea5e930;
+        margin-bottom: 8px;
+      }
+      .ob-btn:hover {
+        background: linear-gradient(135deg, #0284c7, #06b6d4);
+        box-shadow: 0 0 30px #0ea5e950;
+        transform: translateY(-1px);
+      }
+      .ob-skip {
+        text-align: center;
+        font-size: 12px;
+        color: #334d6a;
+        cursor: pointer;
+      }
+      .ob-skip:hover {
+        color: #7aa0c0;
+      }
+
+      /* ─── MAIN POPUP ─── */
+      #main {
+        display: none;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
       .header-icon {
-        font-size: 24px;
+        font-size: 22px;
         filter: drop-shadow(0 0 8px #0ea5e9);
       }
       .header-title {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 700;
       }
       .header-sub {
-        font-size: 12px;
+        font-size: 11px;
         color: #7aa0c0;
+      }
+
+      /* Toggle switch */
+      .toggle-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .toggle-label {
+        font-size: 11px;
+        color: #334d6a;
+      }
+      .toggle {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        background: #1a2d4a;
+        border-radius: 99px;
+        cursor: pointer;
+        transition: background 0.2s;
+        border: 1px solid #1a2d4a;
+      }
+      .toggle.on {
+        background: #0369a1;
+        border-color: #0ea5e9;
+        box-shadow: 0 0 10px #0ea5e940;
+      }
+      .toggle-knob {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s;
+      }
+      .toggle.on .toggle-knob {
+        transform: translateX(16px);
       }
 
       .streak-box {
         background: linear-gradient(135deg, #0a1a30, #0d1526);
         border: 1px solid #0ea5e9;
         border-radius: 12px;
-        padding: 16px;
+        padding: 14px;
         text-align: center;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         box-shadow:
           0 0 20px #0ea5e925,
           0 0 60px #0ea5e910;
       }
       .streak-fire {
-        font-size: 32px;
-        margin-bottom: 4px;
+        font-size: 28px;
+        margin-bottom: 2px;
       }
       .streak-number {
-        font-size: 36px;
+        font-size: 32px;
         font-weight: 900;
         color: #06b6d4;
         line-height: 1;
         text-shadow: 0 0 20px #06b6d460;
       }
       .streak-label {
-        font-size: 12px;
+        font-size: 11px;
         color: #7aa0c0;
-        margin-top: 4px;
+        margin-top: 3px;
       }
       .streak-best {
-        font-size: 11px;
+        font-size: 10px;
         color: #334d6a;
-        margin-top: 6px;
+        margin-top: 4px;
       }
       .streak-best span {
         color: #0ea5e9;
@@ -74,24 +242,24 @@
       .stats {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 12px;
+        gap: 8px;
+        margin-bottom: 10px;
       }
       .stat-box {
         background: #0d1526;
         border: 1px solid #1a2d4a;
         border-radius: 10px;
-        padding: 12px;
+        padding: 10px;
         text-align: center;
       }
       .stat-value {
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 800;
         color: #0ea5e9;
         text-shadow: 0 0 10px #0ea5e940;
       }
       .stat-label {
-        font-size: 11px;
+        font-size: 10px;
         color: #7aa0c0;
         margin-top: 2px;
       }
@@ -100,18 +268,18 @@
         background: #0d1526;
         border: 1px solid #1a2d4a;
         border-radius: 10px;
-        padding: 14px;
-        margin-bottom: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
       }
       .honesty-label {
-        font-size: 12px;
+        font-size: 11px;
         color: #7aa0c0;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
       }
       .honesty-bar-bg {
         background: #0a1220;
         border-radius: 99px;
-        height: 8px;
+        height: 7px;
         overflow: hidden;
       }
       .honesty-bar {
@@ -122,9 +290,9 @@
         box-shadow: 0 0 8px #06b6d450;
       }
       .honesty-score {
-        font-size: 13px;
+        font-size: 12px;
         color: #06b6d4;
-        margin-top: 6px;
+        margin-top: 5px;
         font-weight: 600;
       }
 
@@ -134,104 +302,158 @@
         border: 1px solid #1a2d4a;
         border-radius: 8px;
         color: #7aa0c0;
-        font-size: 13px;
-        padding: 10px;
+        font-size: 12px;
+        padding: 9px;
         cursor: pointer;
         transition: all 0.2s;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
       }
       .btn:hover {
         border-color: #0ea5e9;
-        color: #ffffff;
+        color: #fff;
         box-shadow: 0 0 12px #0ea5e925;
       }
 
-      .honesty {
-        background: #13131a;
-        border: 1px solid #2a2a3a;
+      .disabled-notice {
+        background: #0d1526;
+        border: 1px solid #1a2d4a;
         border-radius: 10px;
-        padding: 14px;
-        margin-bottom: 12px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 10px;
       }
-      .honesty-label {
-        font-size: 12px;
-        color: #8888aa;
+      .disabled-notice-icon {
+        font-size: 28px;
         margin-bottom: 8px;
       }
-      .honesty-bar-bg {
-        background: #1e1e2e;
-        border-radius: 99px;
-        height: 8px;
-        overflow: hidden;
-      }
-      .honesty-bar {
-        background: #6366f1;
-        height: 100%;
-        border-radius: 99px;
-        transition: width 0.5s;
-      }
-      .honesty-score {
+      .disabled-notice-text {
         font-size: 13px;
-        color: #a78bfa;
-        margin-top: 6px;
-        font-weight: 600;
-      }
-
-      .btn {
-        width: 100%;
-        background: #1e1e2e;
-        border: 1px solid #2a2a3a;
-        border-radius: 8px;
-        color: #ccccdd;
-        font-size: 13px;
-        padding: 10px;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-bottom: 8px;
-      }
-      .btn:hover {
-        border-color: #6366f1;
-        color: #ffffff;
+        color: #334d6a;
       }
     </style>
   </head>
   <body>
-    <div class="header">
-      <div class="header-icon">🔒</div>
-      <div>
-        <div class="header-title">Commitment Timer</div>
-        <div class="header-sub">Stay intentional</div>
+    <!-- ONBOARDING -->
+    <div id="onboarding">
+      <div class="ob-header">
+        <div class="ob-icon">🔒</div>
+        <div class="ob-title">Commitment Timer</div>
+        <div class="ob-sub">Browse with intention, not impulse.</div>
       </div>
+
+      <div class="ob-steps">
+        <div class="ob-step">
+          <div class="ob-step-num">1</div>
+          <div class="ob-step-text">
+            Visit a distracting site — you'll be
+            <strong>intercepted</strong> before entering.
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-step-num">2</div>
+          <div class="ob-step-text">
+            <strong>Type why you're going there.</strong> Vague reasons get
+            rejected.
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-step-num">3</div>
+          <div class="ob-step-text">
+            Pick a <strong>time limit</strong>. A timer appears while you
+            browse.
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-step-num">4</div>
+          <div class="ob-step-text">
+            When time's up → <strong>guilt screen.</strong> Did you keep your
+            promise?
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-step-num">5</div>
+          <div class="ob-step-text">
+            Break a promise → site <strong>locked for 10 minutes. ❄️</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="ob-sites">
+        <div class="ob-sites-label">Currently blocking</div>
+        <div class="ob-sites-list">
+          <span class="ob-site-tag">youtube.com</span>
+          <span class="ob-site-tag">reddit.com</span>
+          <span class="ob-site-tag">twitter.com</span>
+          <span class="ob-site-tag">instagram.com</span>
+          <span class="ob-site-tag">tiktok.com</span>
+          <span class="ob-site-tag">facebook.com</span>
+        </div>
+      </div>
+
+      <button class="ob-btn" id="ob-got-it">Let's go →</button>
+      <div class="ob-skip" id="ob-skip">Skip intro</div>
     </div>
 
-    <div class="streak-box">
-      <div class="streak-fire" id="streak-emoji">🔥</div>
-      <div class="streak-number" id="streak-number">0</div>
-      <div class="streak-label">day streak</div>
-      <div class="streak-best">Best: <span id="best-streak">0</span> days</div>
-    </div>
-
-    <div class="stats">
-      <div class="stat-box">
-        <div class="stat-value" id="total-sessions">0</div>
-        <div class="stat-label">Total Sessions</div>
+    <!-- MAIN POPUP -->
+    <div id="main">
+      <div class="header">
+        <div class="header-left">
+          <div class="header-icon">🔒</div>
+          <div>
+            <div class="header-title">Commitment Timer</div>
+            <div class="header-sub">Stay intentional</div>
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <span class="toggle-label" id="toggle-label">ON</span>
+          <div class="toggle on" id="toggle">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
       </div>
-      <div class="stat-box">
-        <div class="stat-value" id="kept-promises">0</div>
-        <div class="stat-label">Kept Promises</div>
-      </div>
-    </div>
 
-    <div class="honesty">
-      <div class="honesty-label">Honesty Score</div>
-      <div class="honesty-bar-bg">
-        <div class="honesty-bar" id="honesty-bar" style="width: 0%"></div>
-      </div>
-      <div class="honesty-score" id="honesty-score">0% follow-through</div>
-    </div>
+      <div id="enabled-content">
+        <div class="streak-box">
+          <div class="streak-fire" id="streak-emoji">💤</div>
+          <div class="streak-number" id="streak-number">0</div>
+          <div class="streak-label">day streak</div>
+          <div class="streak-best">
+            Best: <span id="best-streak">0</span> days
+          </div>
+        </div>
 
-    <button class="btn" id="dashboard-btn">📊 View Dashboard</button>
-    <button class="btn" id="options-btn">⚙️ Settings</button>
+        <div class="stats">
+          <div class="stat-box">
+            <div class="stat-value" id="total-sessions">0</div>
+            <div class="stat-label">Total Sessions</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="kept-promises">0</div>
+            <div class="stat-label">Kept Promises</div>
+          </div>
+        </div>
+
+        <div class="honesty">
+          <div class="honesty-label">Honesty Score</div>
+          <div class="honesty-bar-bg">
+            <div class="honesty-bar" id="honesty-bar" style="width: 0%"></div>
+          </div>
+          <div class="honesty-score" id="honesty-score">0% follow-through</div>
+        </div>
+      </div>
+
+      <div id="disabled-content" style="display: none">
+        <div class="disabled-notice">
+          <div class="disabled-notice-icon">😴</div>
+          <div class="disabled-notice-text">
+            Extension is paused.<br />Blocked sites are accessible.
+          </div>
+        </div>
+      </div>
+
+      <button class="btn" id="dashboard-btn">📊 View Dashboard</button>
+      <button class="btn" id="options-btn">⚙️ Settings</button>
+    </div>
 
     <script src="popup.js"></script>
   </body>
