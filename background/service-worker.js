@@ -25,62 +25,94 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.webNavigation.onCommitted.addListener((details) => {
+// Use onHistoryStateUpdated for SPAs (YouTube) + onCommitted for normal pages
+function handleNavigation(details) {
   if (details.frameId !== 0) return;
 
-  chrome.storage.sync.get(
-    ["blockedSites", "activeSessions", "cooldowns"],
-    (data) => {
-      const blockedSites = data.blockedSites || DEFAULT_BLOCKED_SITES;
-      const activeSessions = data.activeSessions || {};
-      const cooldowns = data.cooldowns || {};
+  // Small delay to let storage catch up — fixes race condition on refresh
+  setTimeout(() => {
+    chrome.storage.sync.get(
+      ["blockedSites", "activeSessions", "cooldowns", "extensionEnabled"],
+      (data) => {
+        // Respect enable/disable toggle
+        if (data.extensionEnabled === false) return;
 
-      const url = new URL(details.url);
-      const hostname = url.hostname.replace("www.", "");
+        const blockedSites = data.blockedSites || DEFAULT_BLOCKED_SITES;
+        const activeSessions = data.activeSessions || {};
+        const cooldowns = data.cooldowns || {};
 
-      const isBlocked = blockedSites.some((site) => hostname.includes(site));
-      if (!isBlocked) return;
+        let url;
+        try {
+          url = new URL(details.url);
+        } catch {
+          return;
+        }
+        const hostname = url.hostname.replace("www.", "");
 
-      // Check cooldown
-      if (cooldowns[hostname] && cooldowns[hostname] > Date.now()) {
-        chrome.scripting.executeScript({
-          target: { tabId: details.tabId },
-          files: ["content/intercept.js"],
-        });
-        chrome.scripting.insertCSS({
-          target: { tabId: details.tabId },
-          files: ["content/intercept.css"],
-        });
-        return;
-      }
+        const isBlocked = blockedSites.some((site) => hostname.includes(site));
+        if (!isBlocked) return;
 
-      const hasActiveSession =
-        activeSessions[details.tabId] &&
-        activeSessions[details.tabId].site === hostname &&
-        activeSessions[details.tabId].expiresAt > Date.now();
+        // Check cooldown
+        if (cooldowns[hostname] && cooldowns[hostname] > Date.now()) {
+          chrome.scripting
+            .executeScript({
+              target: { tabId: details.tabId },
+              files: ["content/intercept.js"],
+            })
+            .catch(() => {});
+          chrome.scripting
+            .insertCSS({
+              target: { tabId: details.tabId },
+              files: ["content/intercept.css"],
+            })
+            .catch(() => {});
+          return;
+        }
 
-      if (hasActiveSession) {
-        chrome.scripting.executeScript({
-          target: { tabId: details.tabId },
-          files: ["content/timer-widget.js"],
-        });
-        chrome.scripting.insertCSS({
-          target: { tabId: details.tabId },
-          files: ["content/timer-widget.css"],
-        });
-      } else {
-        chrome.scripting.executeScript({
-          target: { tabId: details.tabId },
-          files: ["content/intercept.js"],
-        });
-        chrome.scripting.insertCSS({
-          target: { tabId: details.tabId },
-          files: ["content/intercept.css"],
-        });
-      }
-    },
-  );
-});
+        // Check active session — key fix: also check by hostname not just tabId
+        const tabSession = activeSessions[details.tabId];
+        const hasActiveSession =
+          tabSession &&
+          tabSession.site === hostname &&
+          tabSession.expiresAt > Date.now();
+
+        if (hasActiveSession) {
+          // Already committed — inject timer widget
+          chrome.scripting
+            .executeScript({
+              target: { tabId: details.tabId },
+              files: ["content/timer-widget.js"],
+            })
+            .catch(() => {});
+          chrome.scripting
+            .insertCSS({
+              target: { tabId: details.tabId },
+              files: ["content/timer-widget.css"],
+            })
+            .catch(() => {});
+        } else {
+          // No active session — show intercept
+          chrome.scripting
+            .executeScript({
+              target: { tabId: details.tabId },
+              files: ["content/intercept.js"],
+            })
+            .catch(() => {});
+          chrome.scripting
+            .insertCSS({
+              target: { tabId: details.tabId },
+              files: ["content/intercept.css"],
+            })
+            .catch(() => {});
+        }
+      },
+    );
+  }, 100); // 100ms delay fixes race condition
+}
+
+// Handle both regular navigation and SPA navigation (YouTube)
+chrome.webNavigation.onCommitted.addListener(handleNavigation);
+chrome.webNavigation.onHistoryStateUpdated.addListener(handleNavigation);
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "START_SESSION") {
@@ -110,16 +142,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.storage.sync.get(["activeSessions", "cooldowns"], (data) => {
       const activeSessions = data.activeSessions || {};
       const cooldowns = data.cooldowns || {};
-      sendResponse({
-        session: activeSessions[tabId] || null,
-        cooldowns,
-      });
+      sendResponse({ session: activeSessions[tabId] || null, cooldowns });
     });
     return true;
   }
 
   if (message.type === "SNOOZE_SESSION") {
-    const { extraMins, site } = message;
+    const { extraMins } = message;
     const tabId = sender.tab.id;
 
     chrome.storage.sync.get("activeSessions", (data) => {
@@ -132,7 +161,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         activeSessions[tabId] = session;
         chrome.storage.sync.set({ activeSessions });
 
-        // Reset alarm
         chrome.alarms.clear(`session_${tabId}`, () => {
           chrome.alarms.create(`session_${tabId}`, {
             delayInMinutes: extraMins,
@@ -146,7 +174,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
       }
     });
-
     return true;
   }
 
@@ -189,7 +216,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           if (keptPromise) {
             stats.keptPromises += 1;
           } else {
-            // ❄️ Apply 10 min cooldown on broken promise
+            // ❄️ Cooldown penalty
             cooldowns[session.site] = Date.now() + 10 * 60 * 1000;
             chrome.alarms.create(`cooldown_${session.site}`, {
               delayInMinutes: 10,
@@ -213,7 +240,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ success: true });
       },
     );
-
     return true;
   }
 
@@ -258,7 +284,6 @@ function calculateStreak(sessions) {
   return streak;
 }
 
-// Clear expired cooldowns
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name.startsWith("cooldown_")) {
     const site = alarm.name.replace("cooldown_", "");
