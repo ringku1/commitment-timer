@@ -28,21 +28,64 @@
         font-size: 14px;
         margin-bottom: 32px;
       }
-      .stats-grid {
+
+      .top-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr 2fr;
         gap: 12px;
         margin-bottom: 32px;
+      }
+
+      .streak-card {
+        background: linear-gradient(135deg, #1e1340, #13131a);
+        border: 1px solid #6366f1;
+        border-radius: 12px;
+        padding: 24px 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .streak-fire {
+        font-size: 40px;
+        margin-bottom: 8px;
+      }
+      .streak-num {
+        font-size: 52px;
+        font-weight: 900;
+        color: #a78bfa;
+        line-height: 1;
+      }
+      .streak-label {
+        font-size: 13px;
+        color: #8888aa;
+        margin-top: 4px;
+      }
+      .streak-best {
+        font-size: 12px;
+        color: #55556a;
+        margin-top: 8px;
+      }
+      .streak-best span {
+        color: #6366f1;
+        font-weight: 700;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
       }
       .stat-card {
         background: #13131a;
         border: 1px solid #2a2a3a;
         border-radius: 12px;
-        padding: 20px;
+        padding: 16px;
         text-align: center;
       }
       .stat-value {
-        font-size: 32px;
+        font-size: 28px;
         font-weight: 800;
         color: #6366f1;
       }
@@ -51,20 +94,18 @@
         color: #8888aa;
         margin-top: 4px;
       }
-      .section-title {
-        font-size: 13px;
-        font-weight: 600;
-        color: #8888aa;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 12px;
-      }
+
       .honesty-wrap {
         background: #13131a;
         border: 1px solid #2a2a3a;
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 32px;
+      }
+      .honesty-label {
+        font-size: 12px;
+        color: #8888aa;
+        margin-bottom: 8px;
       }
       .honesty-bar-bg {
         background: #1e1e2e;
@@ -83,6 +124,15 @@
         font-size: 20px;
         font-weight: 800;
         color: #a78bfa;
+      }
+
+      .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #8888aa;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
       }
       .session-list {
         display: flex;
@@ -139,34 +189,76 @@
         color: #55556a;
         padding: 40px;
       }
+
+      /* Streak calendar */
+      .calendar {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-bottom: 32px;
+      }
+      .cal-day {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #55556a;
+      }
+      .cal-kept {
+        background: #166534;
+        color: #4ade80;
+      }
+      .cal-broke {
+        background: #7f1d1d;
+        color: #f87171;
+      }
+      .cal-empty {
+        background: #1e1e2e;
+      }
     </style>
   </head>
   <body>
     <h1>📊 Dashboard</h1>
     <p class="sub">Your commitment history</p>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-value" id="total">0</div>
-        <div class="stat-label">Total Sessions</div>
+    <div class="top-grid">
+      <div class="streak-card">
+        <div class="streak-fire" id="streak-emoji">🔥</div>
+        <div class="streak-num" id="streak-num">0</div>
+        <div class="streak-label">day streak</div>
+        <div class="streak-best">
+          Best: <span id="best-streak">0</span> days
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-value" id="kept">0</div>
-        <div class="stat-label">Kept Promises</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="score">0%</div>
-        <div class="stat-label">Honesty Score</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="total">0</div>
+          <div class="stat-label">Sessions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="kept">0</div>
+          <div class="stat-label">Kept</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="score">0%</div>
+          <div class="stat-label">Honesty</div>
+        </div>
       </div>
     </div>
 
     <div class="honesty-wrap">
-      <p class="section-title">Overall Honesty</p>
+      <p class="honesty-label">Overall Honesty</p>
       <div class="honesty-bar-bg">
         <div class="honesty-bar" id="honesty-bar" style="width: 0%"></div>
       </div>
       <div class="honesty-score" id="honesty-label">0% follow-through</div>
     </div>
+
+    <p class="section-title">Last 30 Days</p>
+    <div class="calendar" id="calendar"></div>
 
     <p class="section-title">Recent Sessions</p>
     <div class="session-list" id="session-list">

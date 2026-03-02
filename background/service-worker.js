@@ -8,24 +8,25 @@ const DEFAULT_BLOCKED_SITES = [
   "x.com",
 ];
 
-// Initialize storage on install
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.get(["blockedSites", "sessions", "stats"], (data) => {
-    if (!data.blockedSites) {
+    if (!data.blockedSites)
       chrome.storage.sync.set({ blockedSites: DEFAULT_BLOCKED_SITES });
-    }
-    if (!data.sessions) {
-      chrome.storage.sync.set({ sessions: [] });
-    }
-    if (!data.stats) {
-      chrome.storage.sync.set({ stats: { totalSessions: 0, keptPromises: 0 } });
-    }
+    if (!data.sessions) chrome.storage.sync.set({ sessions: [] });
+    if (!data.stats)
+      chrome.storage.sync.set({
+        stats: {
+          totalSessions: 0,
+          keptPromises: 0,
+          currentStreak: 0,
+          bestStreak: 0,
+        },
+      });
   });
 });
 
-// Intercept navigation to blocked sites
 chrome.webNavigation.onCommitted.addListener((details) => {
-  if (details.frameId !== 0) return; // main frame only
+  if (details.frameId !== 0) return;
 
   chrome.storage.sync.get(["blockedSites", "activeSessions"], (data) => {
     const blockedSites = data.blockedSites || DEFAULT_BLOCKED_SITES;
@@ -43,7 +44,6 @@ chrome.webNavigation.onCommitted.addListener((details) => {
       activeSessions[details.tabId].expiresAt > Date.now();
 
     if (hasActiveSession) {
-      // Already has active session, inject timer widget
       chrome.scripting.executeScript({
         target: { tabId: details.tabId },
         files: ["content/timer-widget.js"],
@@ -53,7 +53,6 @@ chrome.webNavigation.onCommitted.addListener((details) => {
         files: ["content/timer-widget.css"],
       });
     } else {
-      // No active session, show intercept overlay
       chrome.scripting.executeScript({
         target: { tabId: details.tabId },
         files: ["content/intercept.js"],
@@ -66,14 +65,12 @@ chrome.webNavigation.onCommitted.addListener((details) => {
   });
 });
 
-// Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "START_SESSION") {
     const { site, intention, durationMins } = message;
     const tabId = sender.tab.id;
     const expiresAt = Date.now() + durationMins * 60 * 1000;
 
-    // Save active session
     chrome.storage.sync.get("activeSessions", (data) => {
       const activeSessions = data.activeSessions || {};
       activeSessions[tabId] = {
@@ -86,9 +83,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.storage.sync.set({ activeSessions });
     });
 
-    // Set alarm for when timer expires
     chrome.alarms.create(`session_${tabId}`, { delayInMinutes: durationMins });
-
     sendResponse({ success: true, expiresAt });
   }
 
@@ -108,11 +103,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.storage.sync.get(["activeSessions", "sessions", "stats"], (data) => {
       const activeSessions = data.activeSessions || {};
       const sessions = data.sessions || [];
-      const stats = data.stats || { totalSessions: 0, keptPromises: 0 };
+      const stats = data.stats || {
+        totalSessions: 0,
+        keptPromises: 0,
+        currentStreak: 0,
+        bestStreak: 0,
+      };
       const session = activeSessions[tabId];
 
       if (session) {
         const actualMins = Math.round((Date.now() - session.startedAt) / 60000);
+        const today = new Date().toDateString();
+
         sessions.unshift({
           site: session.site,
           intention: session.intention,
@@ -120,13 +122,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           actualMins,
           keptPromise,
           timestamp: Date.now(),
+          date: today,
         });
 
         stats.totalSessions += 1;
         if (keptPromise) stats.keptPromises += 1;
 
-        delete activeSessions[tabId];
+        // --- STREAK CALCULATION ---
+        stats.currentStreak = calculateStreak(sessions);
+        if (stats.currentStreak > (stats.bestStreak || 0)) {
+          stats.bestStreak = stats.currentStreak;
+        }
 
+        delete activeSessions[tabId];
         chrome.storage.sync.set({
           activeSessions,
           sessions: sessions.slice(0, 100),
@@ -143,12 +151,44 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
-// Handle alarm firing (timer expired)
+function calculateStreak(sessions) {
+  if (!sessions.length) return 0;
+
+  // Group sessions by date, check if each day had at least one kept promise
+  const dayMap = {};
+  sessions.forEach((s) => {
+    const d = s.date || new Date(s.timestamp).toDateString();
+    if (!dayMap[d]) dayMap[d] = false;
+    if (s.keptPromise) dayMap[d] = true;
+  });
+
+  // Build sorted list of days (most recent first)
+  const days = Object.keys(dayMap).sort((a, b) => new Date(b) - new Date(a));
+
+  let streak = 0;
+  let checkDate = new Date();
+  checkDate.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < days.length; i++) {
+    const dayDate = new Date(days[i]);
+    dayDate.setHours(0, 0, 0, 0);
+
+    const diffDays = Math.round((checkDate - dayDate) / 86400000);
+
+    if (diffDays > 1) break; // gap in days, streak broken
+    if (!dayMap[days[i]]) break; // that day had no kept promise
+
+    streak++;
+    checkDate = dayDate;
+  }
+
+  return streak;
+}
+
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (!alarm.name.startsWith("session_")) return;
   const tabId = parseInt(alarm.name.replace("session_", ""));
 
-  // Inject guilt screen
   chrome.scripting
     .executeScript({
       target: { tabId },
@@ -156,5 +196,5 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         window.dispatchEvent(new CustomEvent("COMMITMENT_TIMER_EXPIRED"));
       },
     })
-    .catch(() => {}); // tab might be closed
+    .catch(() => {});
 });

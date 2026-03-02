@@ -33,11 +33,46 @@
         font-size: 12px;
         color: #8888aa;
       }
+
+      .streak-box {
+        background: linear-gradient(135deg, #1e1340, #13131a);
+        border: 1px solid #6366f1;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        margin-bottom: 12px;
+        position: relative;
+        overflow: hidden;
+      }
+      .streak-fire {
+        font-size: 32px;
+        margin-bottom: 4px;
+      }
+      .streak-number {
+        font-size: 36px;
+        font-weight: 900;
+        color: #a78bfa;
+        line-height: 1;
+      }
+      .streak-label {
+        font-size: 12px;
+        color: #8888aa;
+        margin-top: 4px;
+      }
+      .streak-best {
+        font-size: 11px;
+        color: #55556a;
+        margin-top: 6px;
+      }
+      .streak-best span {
+        color: #6366f1;
+      }
+
       .stats {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 10px;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
       }
       .stat-box {
         background: #13131a;
@@ -56,12 +91,13 @@
         color: #8888aa;
         margin-top: 2px;
       }
+
       .honesty {
         background: #13131a;
         border: 1px solid #2a2a3a;
         border-radius: 10px;
         padding: 14px;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
       }
       .honesty-label {
         font-size: 12px;
@@ -86,6 +122,7 @@
         margin-top: 6px;
         font-weight: 600;
       }
+
       .btn {
         width: 100%;
         background: #1e1e2e;
@@ -111,6 +148,13 @@
         <div class="header-title">Commitment Timer</div>
         <div class="header-sub">Stay intentional</div>
       </div>
+    </div>
+
+    <div class="streak-box">
+      <div class="streak-fire" id="streak-emoji">🔥</div>
+      <div class="streak-number" id="streak-number">0</div>
+      <div class="streak-label">day streak</div>
+      <div class="streak-best">Best: <span id="best-streak">0</span> days</div>
     </div>
 
     <div class="stats">

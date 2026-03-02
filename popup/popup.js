@@ -1,9 +1,21 @@
 chrome.storage.sync.get(["stats"], (data) => {
-  const stats = data.stats || { totalSessions: 0, keptPromises: 0 };
+  const stats = data.stats || {
+    totalSessions: 0,
+    keptPromises: 0,
+    currentStreak: 0,
+    bestStreak: 0,
+  };
   const score =
     stats.totalSessions > 0
       ? Math.round((stats.keptPromises / stats.totalSessions) * 100)
       : 0;
+
+  const streak = stats.currentStreak || 0;
+
+  document.getElementById("streak-number").textContent = streak;
+  document.getElementById("best-streak").textContent = stats.bestStreak || 0;
+  document.getElementById("streak-emoji").textContent =
+    streak === 0 ? "💤" : streak < 3 ? "🔥" : streak < 7 ? "🔥🔥" : "🔥🔥🔥";
 
   document.getElementById("total-sessions").textContent = stats.totalSessions;
   document.getElementById("kept-promises").textContent = stats.keptPromises;
