@@ -14,31 +14,49 @@ distracting sites like YouTube, Reddit, or Twitter — then holds you accountabl
 - ⏸️ Snooze tax — extensions get progressively harder
 - ❄️ Cooldown penalty — break a promise, site locked 10 mins
 - 📊 Dashboard with honesty score + 30-day calendar
-- 🔘 Enable/disable toggle
+- 🔘 Enable/disable toggle anytime
 
-## 🚀 Install (takes 2 minutes)
+---
+
+## 🚀 Install Guide (2 minutes)
 
 ### Step 1 — Download
 
-Click the green **Code** button above → **Download ZIP** → Extract it
+![Step 1](docs/images/install-step1.png)
 
-### Step 2 — Load in Chrome
+Click the green **Code** button above → **Download ZIP** → save to your computer
 
-1. Open Chrome and go to `chrome://extensions`
+---
+
+### Step 2 — Extract
+
+![Step 2](docs/images/install-step2.png)
+
+Find the ZIP in your Downloads folder → right-click → **Extract All**
+
+---
+
+### Step 3 — Load in Chrome
+
+![Step 3](docs/images/install-step3.png)
+
+1. Open Chrome → go to `chrome://extensions`
 2. Enable **Developer mode** (top right toggle)
 3. Click **Load unpacked**
 4. Select the extracted `Commitment Timer` folder
-5. Done ✅
+5. ✅ Done!
+
+---
 
 ## 🌐 Blocked Sites (default)
 
-YouTube, Reddit, Twitter, Instagram, TikTok, Facebook, X
+YouTube · Reddit · Twitter · Instagram · TikTok · Facebook · X
 
-You can add/remove sites in the extension settings.
+You can add/remove sites via the extension settings ⚙️
 
 ## 🛡️ Privacy
 
-Everything stays on your device. No data is collected or transmitted.
+Everything stays on your device. No data is collected or transmitted ever.
 [Privacy Policy](https://YOUR_USERNAME.github.io/commitment-timer/privacy-policy.html)
 
 ## 📄 License
