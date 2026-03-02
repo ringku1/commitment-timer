@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Commitment Timer — Dashboard</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: #0a0a0f;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: #ffffff;
+        padding: 40px 20px;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      .sub {
+        color: #8888aa;
+        font-size: 14px;
+        margin-bottom: 32px;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+      .stat-card {
+        background: #13131a;
+        border: 1px solid #2a2a3a;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 32px;
+        font-weight: 800;
+        color: #6366f1;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: #8888aa;
+        margin-top: 4px;
+      }
+      .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #8888aa;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+      }
+      .honesty-wrap {
+        background: #13131a;
+        border: 1px solid #2a2a3a;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 32px;
+      }
+      .honesty-bar-bg {
+        background: #1e1e2e;
+        border-radius: 99px;
+        height: 12px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+      .honesty-bar {
+        background: linear-gradient(90deg, #6366f1, #a78bfa);
+        height: 100%;
+        border-radius: 99px;
+        transition: width 0.8s;
+      }
+      .honesty-score {
+        font-size: 20px;
+        font-weight: 800;
+        color: #a78bfa;
+      }
+      .session-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .session-card {
+        background: #13131a;
+        border: 1px solid #2a2a3a;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .session-left {
+        flex: 1;
+      }
+      .session-site {
+        font-size: 13px;
+        color: #8888aa;
+        margin-bottom: 4px;
+      }
+      .session-intention {
+        font-size: 15px;
+        color: #ccccdd;
+      }
+      .session-right {
+        text-align: right;
+      }
+      .session-time {
+        font-size: 13px;
+        color: #8888aa;
+      }
+      .session-badge {
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 99px;
+        margin-top: 4px;
+        display: inline-block;
+      }
+      .badge-kept {
+        background: #166534;
+        color: #4ade80;
+      }
+      .badge-broke {
+        background: #7f1d1d;
+        color: #f87171;
+      }
+      .empty {
+        text-align: center;
+        color: #55556a;
+        padding: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📊 Dashboard</h1>
+    <p class="sub">Your commitment history</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="total">0</div>
+        <div class="stat-label">Total Sessions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="kept">0</div>
+        <div class="stat-label">Kept Promises</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="score">0%</div>
+        <div class="stat-label">Honesty Score</div>
+      </div>
+    </div>
+
+    <div class="honesty-wrap">
+      <p class="section-title">Overall Honesty</p>
+      <div class="honesty-bar-bg">
+        <div class="honesty-bar" id="honesty-bar" style="width: 0%"></div>
+      </div>
+      <div class="honesty-score" id="honesty-label">0% follow-through</div>
+    </div>
+
+    <p class="section-title">Recent Sessions</p>
+    <div class="session-list" id="session-list">
+      <div class="empty">
+        No sessions yet. Start browsing to track commitments.
+      </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>
