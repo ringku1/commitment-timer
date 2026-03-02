@@ -92,6 +92,7 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
           ${s.keptPromise ? "✅ Kept" : "❌ Broke"}
         </span>
         ${s.snoozeCount > 0 ? `<div class="session-snooze">⏸️ Snoozed ${s.snoozeCount}x</div>` : ""}
+          ${s.autoBreak ? `<div class="session-snooze" style="color:#ef4444">⏱️ Auto-detected overstay</div>` : ""}
         <div class="session-time" style="margin-top:3px">${date}</div>
       </div>
     `;
