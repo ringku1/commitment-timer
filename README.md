@@ -1,39 +1,46 @@
 # 🔒 Commitment Timer
 
-A Chrome extension that forces you to commit to an intention before visiting distracting sites like YouTube, Reddit, or Twitter.
+> Browse with intention, not impulse.
 
-## How it works
-1. Visit a blocked site (YouTube, Reddit, etc.)
-2. Type **why** you're going there — be specific
-3. Pick a time limit (5/10/15/30 min)
-4. A floating timer appears while you browse
-5. When time's up → guilt screen shows your planned vs actual time
-6. Track your honesty score over time
+A Chrome extension that forces you to commit to a reason before visiting
+distracting sites like YouTube, Reddit, or Twitter — then holds you accountable.
 
-## Features
-- 🔒 Intercept overlay on blocked sites
-- ✍️ Intention validator (rejects vague reasons)
-- ⏱️ Floating countdown timer
-- 😬 Guilt screen with planned vs actual comparison
-- 📊 Dashboard with honesty score & session history
-- ⚙️ Settings to add/remove blocked sites
+## ✨ Features
 
-## Installation (Developer Mode)
-1. Clone this repo
-2. Open Chrome → `chrome://extensions`
-3. Enable **Developer Mode**
-4. Click **Load unpacked**
-5. Select the cloned folder
+- 🔒 Intercepts distracting sites with a commitment screen
+- ⏱️ Floating countdown timer while you browse
+- 😬 Guilt screen when time's up — did you keep your promise?
+- 🔥 Streak tracking — consecutive days of kept promises
+- ⏸️ Snooze tax — extensions get progressively harder
+- ❄️ Cooldown penalty — break a promise, site locked 10 mins
+- 📊 Dashboard with honesty score + 30-day calendar
+- 🔘 Enable/disable toggle
 
-## Tech
-- Manifest V3
-- Vanilla JavaScript
-- Chrome Extension APIs (webNavigation, storage, alarms, scripting)
+## 🚀 Install (takes 2 minutes)
 
-## Coming Soon
-- AI intention validator
-- Weekly shame email reports
-- Chrome Web Store release
+### Step 1 — Download
 
-## License
+Click the green **Code** button above → **Download ZIP** → Extract it
+
+### Step 2 — Load in Chrome
+
+1. Open Chrome and go to `chrome://extensions`
+2. Enable **Developer mode** (top right toggle)
+3. Click **Load unpacked**
+4. Select the extracted `Commitment Timer` folder
+5. Done ✅
+
+## 🌐 Blocked Sites (default)
+
+YouTube, Reddit, Twitter, Instagram, TikTok, Facebook, X
+
+You can add/remove sites in the extension settings.
+
+## 🛡️ Privacy
+
+Everything stays on your device. No data is collected or transmitted.
+[Privacy Policy](https://YOUR_USERNAME.github.io/commitment-timer/privacy-policy.html)
+
+## 📄 License
+
 MIT
