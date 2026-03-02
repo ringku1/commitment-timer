@@ -4,7 +4,14 @@
   "version": "1.0.0",
   "description": "Force yourself to commit before visiting distracting sites.",
 
-  "permissions": ["webNavigation", "storage", "alarms", "scripting", "tabs"],
+  "permissions": [
+    "webNavigation",
+    "storage",
+    "alarms",
+    "scripting",
+    "tabs",
+    "notifications"
+  ],
 
   "host_permissions": [
     "*://*.youtube.com/*",

@@ -49,7 +49,6 @@ function handleNavigation(details) {
         const isBlocked = blockedSites.some((site) => hostname.includes(site));
         if (!isBlocked) return;
 
-        // Check cooldown
         if (cooldowns[hostname] && cooldowns[hostname] > Date.now()) {
           chrome.scripting
             .executeScript({
@@ -107,6 +106,36 @@ function handleNavigation(details) {
 chrome.webNavigation.onCommitted.addListener(handleNavigation);
 chrome.webNavigation.onHistoryStateUpdated.addListener(handleNavigation);
 
+// ─── NOTIFICATIONS ───────────────────────────────────────────────────────────
+
+function showNotification(notifId, title, message) {
+  chrome.notifications.create(notifId, {
+    type: "basic",
+    iconUrl: chrome.runtime.getURL("assets/icon128.png"),
+    title,
+    message,
+    priority: 2,
+    requireInteraction: true,
+  });
+}
+
+chrome.notifications.onClicked.addListener((notifId) => {
+  chrome.notifications.clear(notifId);
+
+  if (notifId.startsWith("session_") || notifId.startsWith("warning_")) {
+    const tabId = parseInt(
+      notifId.replace("session_", "").replace("warning_", ""),
+    );
+    chrome.tabs.update(tabId, { active: true }, (tab) => {
+      if (tab && tab.windowId) {
+        chrome.windows.update(tab.windowId, { focused: true });
+      }
+    });
+  }
+});
+
+// ─── MESSAGES ────────────────────────────────────────────────────────────────
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "START_SESSION") {
     const { site, intention, durationMins } = message;
@@ -126,13 +155,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.storage.sync.set({ activeSessions });
     });
 
-    // Alarm 1 — timer expires at committed time
     chrome.alarms.create(`session_${tabId}`, { delayInMinutes: durationMins });
-
-    // Alarm 2 — overstay check at 2x committed time
     chrome.alarms.create(`overstay_${tabId}`, {
       delayInMinutes: durationMins * 2,
     });
+
+    // 1 min warning — only if session longer than 1 min
+    if (durationMins > 1) {
+      chrome.alarms.create(`warning_${tabId}`, {
+        delayInMinutes: durationMins - 1,
+      });
+    }
 
     sendResponse({ success: true, expiresAt });
   }
@@ -161,18 +194,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         activeSessions[tabId] = session;
         chrome.storage.sync.set({ activeSessions });
 
-        // Reset session alarm
         chrome.alarms.clear(`session_${tabId}`, () => {
           chrome.alarms.create(`session_${tabId}`, {
             delayInMinutes: extraMins,
           });
         });
-
-        // Reset overstay alarm to 2x new time
         chrome.alarms.clear(`overstay_${tabId}`, () => {
           chrome.alarms.create(`overstay_${tabId}`, {
             delayInMinutes: extraMins * 2,
           });
+        });
+        chrome.alarms.clear(`warning_${tabId}`, () => {
+          if (extraMins > 1) {
+            chrome.alarms.create(`warning_${tabId}`, {
+              delayInMinutes: extraMins - 1,
+            });
+          }
         });
 
         sendResponse({
@@ -189,8 +226,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const { keptPromise } = message;
     const tabId = sender.tab.id;
 
-    // Cancel overstay alarm — user ended session manually
     chrome.alarms.clear(`overstay_${tabId}`);
+    chrome.alarms.clear(`warning_${tabId}`);
+    chrome.notifications.clear(`session_${tabId}`);
+    chrome.notifications.clear(`warning_${tabId}`);
 
     chrome.storage.sync.get(
       ["activeSessions", "sessions", "stats", "cooldowns"],
@@ -265,6 +304,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
+// ─── AUTO BREAK (OVERSTAY) ───────────────────────────────────────────────────
+
 function autoBreakSession(tabId) {
   chrome.storage.sync.get(
     ["activeSessions", "sessions", "stats", "cooldowns"],
@@ -280,13 +321,11 @@ function autoBreakSession(tabId) {
       const cooldowns = data.cooldowns || {};
       const session = activeSessions[tabId];
 
-      // Session already ended manually — do nothing
       if (!session) return;
 
       const actualMins = Math.round((Date.now() - session.startedAt) / 60000);
       const today = new Date().toDateString();
 
-      // Auto mark as BROKE
       sessions.unshift({
         site: session.site,
         intention: session.intention,
@@ -294,14 +333,12 @@ function autoBreakSession(tabId) {
         actualMins,
         keptPromise: false,
         snoozeCount: session.snoozeCount || 0,
-        autoBreak: true, // flag so we know it was automatic
+        autoBreak: true,
         timestamp: Date.now(),
         date: today,
       });
 
       stats.totalSessions += 1;
-
-      // Apply cooldown
       cooldowns[session.site] = Date.now() + 10 * 60 * 1000;
       chrome.alarms.create(`cooldown_${session.site}`, { delayInMinutes: 10 });
 
@@ -318,18 +355,21 @@ function autoBreakSession(tabId) {
         cooldowns,
       });
 
-      // Notify the tab — show overstay message then redirect
+      showNotification(
+        `overstay_${tabId}`,
+        "⏱️ Overstay Detected!",
+        `You stayed too long on ${session.site}. Marked as broken. Site locked 10 mins.`,
+      );
+
       chrome.scripting
         .executeScript({
           target: { tabId },
           func: (site) => {
-            // Remove any existing widgets
             const w = document.getElementById("ct-widget");
             const g = document.getElementById("ct-guilt");
             if (w) w.remove();
             if (g) g.remove();
 
-            // Show overstay overlay
             const overlay = document.createElement("div");
             overlay.style.cssText = `
           position:fixed;inset:0;background:rgba(7,11,20,0.98);
@@ -349,7 +389,9 @@ function autoBreakSession(tabId) {
             padding:12px 24px;font-size:14px;color:#ef4444;margin-top:8px">
             ❄️ Site locked for 10 minutes as a consequence.
           </div>
-          <div style="font-size:13px;color:#334d6a;margin-top:8px">Redirecting in <span id="ct-countdown">5</span>s...</div>
+          <div style="font-size:13px;color:#334d6a;margin-top:8px">
+            Redirecting in <span id="ct-countdown">5</span>s...
+          </div>
         `;
             document.body.innerHTML = "";
             document.body.appendChild(overlay);
@@ -371,6 +413,8 @@ function autoBreakSession(tabId) {
     },
   );
 }
+
+// ─── CALCULATE STREAK ────────────────────────────────────────────────────────
 
 function calculateStreak(sessions) {
   if (!sessions.length) return 0;
@@ -401,8 +445,9 @@ function calculateStreak(sessions) {
   return streak;
 }
 
+// ─── ALARMS ──────────────────────────────────────────────────────────────────
+
 chrome.alarms.onAlarm.addListener((alarm) => {
-  // Cooldown expired — unlock site
   if (alarm.name.startsWith("cooldown_")) {
     const site = alarm.name.replace("cooldown_", "");
     chrome.storage.sync.get("cooldowns", (data) => {
@@ -412,9 +457,21 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     });
   }
 
-  // Session timer expired — show guilt screen
   if (alarm.name.startsWith("session_")) {
     const tabId = parseInt(alarm.name.replace("session_", ""));
+
+    chrome.storage.sync.get("activeSessions", (data) => {
+      const activeSessions = data.activeSessions || {};
+      const session = activeSessions[tabId];
+      if (session) {
+        showNotification(
+          `session_${tabId}`,
+          "⏰ Time's up!",
+          `Your ${session.durationMins}min session on ${session.site} has ended. Did you keep your promise?`,
+        );
+      }
+    });
+
     chrome.scripting
       .executeScript({
         target: { tabId },
@@ -425,7 +482,22 @@ chrome.alarms.onAlarm.addListener((alarm) => {
       .catch(() => {});
   }
 
-  // ⏱️ Overstay detected — auto break
+  if (alarm.name.startsWith("warning_")) {
+    const tabId = parseInt(alarm.name.replace("warning_", ""));
+
+    chrome.storage.sync.get("activeSessions", (data) => {
+      const activeSessions = data.activeSessions || {};
+      const session = activeSessions[tabId];
+      if (session) {
+        showNotification(
+          `warning_${tabId}`,
+          "⚠️ 1 minute left!",
+          `Wrapping up on ${session.site}? "${session.intention}"`,
+        );
+      }
+    });
+  }
+
   if (alarm.name.startsWith("overstay_")) {
     const tabId = parseInt(alarm.name.replace("overstay_", ""));
     autoBreakSession(tabId);
