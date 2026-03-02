@@ -57,7 +57,7 @@ You can add/remove sites via the extension settings ⚙️
 ## 🛡️ Privacy
 
 Everything stays on your device. No data is collected or transmitted ever.
-[Privacy Policy](https://YOUR_USERNAME.github.io/commitment-timer/privacy-policy.html)
+[Privacy Policy](https://ringku1.github.io/commitment-timer/privacy-policy.html)
 
 ## 📄 License
 
