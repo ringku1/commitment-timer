@@ -19,6 +19,12 @@ document.getElementById("btn-close").addEventListener("click", () => {
   window.close();
 });
 
+// ─── CLEAR HISTORY — registered once here, not inside renderDashboard ────────
+
+document.getElementById("btn-clear").addEventListener("click", () => {
+  showConfirmDialog();
+});
+
 // ─── RENDER ──────────────────────────────────────────────────────────────────
 
 function renderDashboard(stats, sessions) {
@@ -73,22 +79,27 @@ function renderDashboard(stats, sessions) {
   list.innerHTML = "";
 
   if (sessions.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🔒</div>
-        <div class="empty-title">No sessions yet</div>
-        <div class="empty-text">
-          Visit <strong>youtube.com</strong> or any blocked site<br/>
-          to make your first commitment.<br/><br/>
-          Your history will appear here.
+    chrome.storage.sync.get("blockedSites", (data) => {
+      const sites = data.blockedSites || ["youtube.com"];
+      const exampleSite = sites[0] || "youtube.com";
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🔒</div>
+          <div class="empty-title">No sessions yet</div>
+          <div class="empty-text">
+            Visit <strong>${exampleSite}</strong> or any blocked site<br/>
+            to make your first commitment.<br/><br/>
+            Your history will appear here.
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    });
     document.getElementById("btn-clear").style.display = "none";
     return;
   }
 
   document.getElementById("btn-clear").style.display = "block";
+  // Note: btn-clear listener is registered once at the top, not here
 
   sessions.forEach((s) => {
     const date = new Date(s.timestamp).toLocaleDateString("en-US", {
@@ -115,11 +126,6 @@ function renderDashboard(stats, sessions) {
       </div>
     `;
     list.appendChild(card);
-  });
-
-  // ─── CLEAR HISTORY ────────────────────────────────────────────────────────
-  document.getElementById("btn-clear").addEventListener("click", () => {
-    showConfirmDialog();
   });
 }
 
