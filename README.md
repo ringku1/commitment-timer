@@ -23,13 +23,14 @@ distracting sites like YouTube, Reddit, or Twitter — then holds you accountabl
 
 ## 🌐 Supported Browsers
 
-| Browser    | Support      | Install URL           |
-| ---------- | ------------ | --------------------- |
-| ✅ Chrome  | Full support | `chrome://extensions` |
-| ✅ Edge    | Full support | `edge://extensions`   |
-| ✅ Brave   | Full support | `brave://extensions`  |
-| ✅ Opera   | Full support | `opera://extensions`  |
-| ✅ Firefox | Full support | `about:debugging`     |
+| Browser    | Support       | Install URL                 |
+| ---------- | ------------- | --------------------------- |
+| ✅ Chrome  | Full support  | `chrome://extensions`       |
+| ✅ Edge    | Full support  | `edge://extensions`         |
+| ✅ Brave   | Full support  | `brave://extensions`        |
+| ✅ Opera   | Full support  | `opera://extensions`        |
+| ✅ Firefox | Full support  | `about:debugging`           |
+| ❌ Safari  | Not supported | Extensions API incompatible |
 
 ---
 
