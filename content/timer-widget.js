@@ -9,6 +9,8 @@
   });
 
   function createWidget(session) {
+    let guiltShown = false; // ← guard flag
+
     // ─── WIDGET HOST (Shadow DOM) ─────────────────────────────────────────
     const widgetHost = document.createElement("div");
     widgetHost.id = "ct-widget-host";
@@ -173,6 +175,12 @@
       if (remaining <= 0) {
         display.textContent = "00:00";
         widget.classList.add("ct-expired");
+        // Disable snooze when expired
+        const snooze = widgetShadow.getElementById("ct-snooze-btn");
+        if (snooze) {
+          snooze.disabled = true;
+          snooze.textContent = "Time's up!";
+        }
         return;
       }
 
@@ -180,7 +188,6 @@
       const secs = Math.floor((remaining % 60000) / 1000);
       display.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 
-      // Warning state — last 2 mins
       if (remaining < 2 * 60 * 1000) {
         widget.classList.add("ct-warning");
       }
@@ -212,19 +219,32 @@
     updateSnoozeBtn();
 
     snoozeBtn.addEventListener("click", () => {
+      // Block snooze if timer already expired
+      if (session.expiresAt <= Date.now()) return;
       if (snoozeCount >= 3) return;
       showSnoozeScreen();
     });
 
     // ─── TIMER EXPIRED EVENT ──────────────────────────────────────────────
     window.addEventListener("COMMITMENT_TIMER_EXPIRED", () => {
+      if (guiltShown) return; // ← guard — ignore duplicate events
+      guiltShown = true;
       clearInterval(timerInterval);
       widget.classList.add("ct-expired");
+      // Disable snooze immediately
+      const snooze = widgetShadow.getElementById("ct-snooze-btn");
+      if (snooze) {
+        snooze.disabled = true;
+        snooze.textContent = "Time's up!";
+      }
       setTimeout(() => showGuiltScreen(), 500);
     });
 
     // ─── SNOOZE SCREEN (Shadow DOM) ───────────────────────────────────────
     function showSnoozeScreen() {
+      // Don't show if guilt already shown
+      if (guiltShown) return;
+
       const levels = [
         { mins: 5, chars: 20 },
         { mins: 4, chars: 50 },
@@ -273,137 +293,45 @@
         }
 
         .ct-snooze-icon { font-size: 40px; margin-bottom: 12px; display: block; }
+        .ct-snooze-title { font-size: 22px; font-weight: 800; color: #f97316; margin-bottom: 6px; display: block; text-shadow: 0 0 16px #f9731650; }
+        .ct-snooze-sub { font-size: 14px; color: #7aa0c0; margin-bottom: 20px; display: block; }
 
-        .ct-snooze-title {
-          font-size: 22px;
-          font-weight: 800;
-          color: #f97316;
-          margin-bottom: 6px;
-          display: block;
-          text-shadow: 0 0 16px #f9731650;
-        }
-
-        .ct-snooze-sub {
-          font-size: 14px;
-          color: #7aa0c0;
-          margin-bottom: 20px;
-          display: block;
-        }
-
-        .ct-snooze-terms {
-          display: flex;
-          gap: 12px;
-          justify-content: center;
-          margin-bottom: 20px;
-        }
-
-        .ct-snooze-term {
-          background: #0a1220;
-          border: 1px solid #1a2d4a;
-          border-radius: 10px;
-          padding: 12px 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          flex: 1;
-        }
-
+        .ct-snooze-terms { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; }
+        .ct-snooze-term { background: #0a1220; border: 1px solid #1a2d4a; border-radius: 10px; padding: 12px 20px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
         .ct-snooze-term-label { font-size: 11px; color: #334d6a; }
+        .ct-snooze-term-value { font-size: 18px; font-weight: 700; color: #ffffff; }
+        .ct-snooze-term-value.ct-red { color: #ef4444; text-shadow: 0 0 10px #ef444440; }
 
-        .ct-snooze-term-value {
-          font-size: 18px;
-          font-weight: 700;
-          color: #ffffff;
-        }
-
-        .ct-snooze-term-value.ct-red {
-          color: #ef4444;
-          text-shadow: 0 0 10px #ef444440;
-        }
-
-        .ct-snooze-prompt {
-          font-size: 14px;
-          color: #c0d8f0;
-          margin-bottom: 10px;
-          text-align: left;
-          display: block;
-        }
+        .ct-snooze-prompt { font-size: 14px; color: #c0d8f0; margin-bottom: 10px; text-align: left; display: block; }
 
         .ct-snooze-textarea {
-          width: 100%;
-          background: #0a1220;
-          border: 1px solid #1a2d4a;
-          border-radius: 10px;
-          color: #e0f0ff;
-          font-size: 14px;
-          padding: 12px;
-          resize: none;
-          outline: none;
-          font-family: inherit;
-          margin-bottom: 6px;
-          display: block;
-          transition: border-color 0.2s, box-shadow 0.2s;
-          line-height: 1.5;
+          width: 100%; background: #0a1220; border: 1px solid #1a2d4a;
+          border-radius: 10px; color: #e0f0ff; font-size: 14px; padding: 12px;
+          resize: none; outline: none; font-family: inherit;
+          margin-bottom: 6px; display: block;
+          transition: border-color 0.2s, box-shadow 0.2s; line-height: 1.5;
         }
+        .ct-snooze-textarea:focus { border-color: #f97316; box-shadow: 0 0 0 3px #f9731620; }
 
-        .ct-snooze-textarea:focus {
-          border-color: #f97316;
-          box-shadow: 0 0 0 3px #f9731620, 0 0 16px #f9731620;
-        }
-
-        .ct-snooze-char-count {
-          font-size: 12px;
-          color: #334d6a;
-          text-align: right;
-          margin-bottom: 16px;
-          display: block;
-        }
+        .ct-snooze-char-count { font-size: 12px; color: #334d6a; text-align: right; margin-bottom: 16px; display: block; }
 
         .ct-snooze-buttons { display: flex; gap: 10px; }
 
         .ct-snooze-btn-cancel {
-          flex: 1;
-          background: #0a1220;
-          border: 1px solid #1a2d4a;
-          border-radius: 10px;
-          color: #7aa0c0;
-          font-size: 14px;
-          padding: 12px;
-          cursor: pointer;
-          transition: all 0.2s;
-          font-family: inherit;
+          flex: 1; background: #0a1220; border: 1px solid #1a2d4a;
+          border-radius: 10px; color: #7aa0c0; font-size: 14px;
+          padding: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit;
         }
-
-        .ct-snooze-btn-cancel:hover {
-          border-color: #0ea5e9;
-          color: #ffffff;
-        }
+        .ct-snooze-btn-cancel:hover { border-color: #0ea5e9; color: #ffffff; }
 
         .ct-snooze-btn-confirm {
-          flex: 2;
-          background: linear-gradient(135deg, #9a3412, #c2410c);
-          border: 1px solid #f97316;
-          border-radius: 10px;
-          color: #fff;
-          font-size: 14px;
-          font-weight: 700;
-          padding: 12px;
-          cursor: pointer;
-          transition: all 0.2s;
-          box-shadow: 0 0 16px #f9731630;
-          font-family: inherit;
+          flex: 2; background: linear-gradient(135deg, #9a3412, #c2410c);
+          border: 1px solid #f97316; border-radius: 10px; color: #fff;
+          font-size: 14px; font-weight: 700; padding: 12px; cursor: pointer;
+          transition: all 0.2s; box-shadow: 0 0 16px #f9731630; font-family: inherit;
         }
-
-        .ct-snooze-btn-confirm:hover:not(:disabled) {
-          background: linear-gradient(135deg, #c2410c, #ea580c);
-          box-shadow: 0 0 24px #f9731650;
-        }
-
-        .ct-snooze-btn-confirm:disabled {
-          opacity: 0.3;
-          cursor: not-allowed;
-          box-shadow: none;
-        }
+        .ct-snooze-btn-confirm:hover:not(:disabled) { background: linear-gradient(135deg, #c2410c, #ea580c); box-shadow: 0 0 24px #f9731650; }
+        .ct-snooze-btn-confirm:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
       `;
 
       snoozeShadow.appendChild(snoozeStyle);
@@ -446,25 +374,22 @@
       snoozeShadow.appendChild(snoozeScreen);
       document.documentElement.appendChild(snoozeHost);
 
-      // Char count
       snoozeShadow
         .getElementById("ct-snooze-reason")
         .addEventListener("input", (e) => {
           const len = e.target.value.trim().length;
-          const charCount = snoozeShadow.getElementById("ct-snooze-chars");
-          charCount.textContent = `${len} / ${level.chars} required`;
+          snoozeShadow.getElementById("ct-snooze-chars").textContent =
+            `${len} / ${level.chars} required`;
           snoozeShadow.getElementById("ct-snooze-confirm").disabled =
             len < level.chars;
         });
 
-      // Cancel
       snoozeShadow
         .getElementById("ct-snooze-cancel")
         .addEventListener("click", () => {
           snoozeHost.remove();
         });
 
-      // Confirm snooze
       snoozeShadow
         .getElementById("ct-snooze-confirm")
         .addEventListener("click", () => {
@@ -485,6 +410,9 @@
 
     // ─── GUILT SCREEN (Shadow DOM) ────────────────────────────────────────
     function showGuiltScreen() {
+      // Extra guard — don't create if already exists
+      if (document.getElementById("ct-guilt-host")) return;
+
       const guiltHost = document.createElement("div");
       guiltHost.id = "ct-guilt-host";
       guiltHost.style.cssText = `
@@ -526,148 +454,35 @@
         }
 
         .ct-guilt-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+        .ct-guilt-title { font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 6px; display: block; text-shadow: 0 0 20px #0ea5e940; }
+        .ct-guilt-subtitle { font-size: 15px; color: #7aa0c0; margin-bottom: 24px; display: block; }
 
-        .ct-guilt-title {
-          font-size: 28px;
-          font-weight: 800;
-          color: #ffffff;
-          margin-bottom: 6px;
-          display: block;
-          text-shadow: 0 0 20px #0ea5e940;
-        }
-
-        .ct-guilt-subtitle {
-          font-size: 15px;
-          color: #7aa0c0;
-          margin-bottom: 24px;
-          display: block;
-        }
-
-        .ct-guilt-stats {
-          display: flex;
-          gap: 10px;
-          justify-content: center;
-          margin-bottom: 20px;
-        }
-
-        .ct-guilt-stat {
-          background: #0a1220;
-          border: 1px solid #1a2d4a;
-          border-radius: 10px;
-          padding: 12px 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          flex: 1;
-        }
-
+        .ct-guilt-stats { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .ct-guilt-stat { background: #0a1220; border: 1px solid #1a2d4a; border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
         .ct-guilt-label { font-size: 11px; color: #334d6a; display: block; }
+        .ct-guilt-value { font-size: 20px; font-weight: 700; color: #ffffff; display: block; }
+        .ct-guilt-value.ct-over { color: #ef4444; text-shadow: 0 0 10px #ef444440; }
+        .ct-guilt-value.ct-ok { color: #10b981; text-shadow: 0 0 10px #10b98140; }
 
-        .ct-guilt-value {
-          font-size: 20px;
-          font-weight: 700;
-          color: #ffffff;
-          display: block;
-        }
+        .ct-guilt-intention { background: #0a1220; border: 1px solid #1a2d4a; border-radius: 10px; padding: 14px; margin-bottom: 16px; text-align: left; }
+        .ct-guilt-intention-label { font-size: 11px; color: #334d6a; display: block; margin-bottom: 4px; }
+        .ct-guilt-intention-text { font-size: 14px; color: #06b6d4; font-style: italic; display: block; text-shadow: 0 0 10px #06b6d430; }
 
-        .ct-guilt-value.ct-over {
-          color: #ef4444;
-          text-shadow: 0 0 10px #ef444440;
-        }
+        .ct-guilt-snooze-warning { background: #1a1000; border: 1px solid #f97316; border-radius: 8px; color: #f97316; font-size: 13px; padding: 10px 14px; margin-bottom: 16px; text-align: left; display: block; box-shadow: 0 0 12px #f9731620; }
 
-        .ct-guilt-value.ct-ok {
-          color: #10b981;
-          text-shadow: 0 0 10px #10b98140;
-        }
-
-        .ct-guilt-intention {
-          background: #0a1220;
-          border: 1px solid #1a2d4a;
-          border-radius: 10px;
-          padding: 14px;
-          margin-bottom: 16px;
-          text-align: left;
-        }
-
-        .ct-guilt-intention-label {
-          font-size: 11px;
-          color: #334d6a;
-          display: block;
-          margin-bottom: 4px;
-        }
-
-        .ct-guilt-intention-text {
-          font-size: 14px;
-          color: #06b6d4;
-          font-style: italic;
-          display: block;
-          text-shadow: 0 0 10px #06b6d430;
-        }
-
-        .ct-guilt-snooze-warning {
-          background: #1a1000;
-          border: 1px solid #f97316;
-          border-radius: 8px;
-          color: #f97316;
-          font-size: 13px;
-          padding: 10px 14px;
-          margin-bottom: 16px;
-          text-align: left;
-          display: block;
-          box-shadow: 0 0 12px #f9731620;
-        }
-
-        .ct-guilt-question {
-          font-size: 16px;
-          color: #c0d8f0;
-          margin-bottom: 16px;
-          font-weight: 600;
-          display: block;
-        }
+        .ct-guilt-question { font-size: 16px; color: #c0d8f0; margin-bottom: 16px; font-weight: 600; display: block; }
 
         .ct-guilt-buttons { display: flex; gap: 10px; }
 
-        .ct-guilt-btn {
-          flex: 1;
-          border-radius: 10px;
-          font-size: 15px;
-          font-weight: 600;
-          padding: 12px;
-          cursor: pointer;
-          transition: all 0.2s;
-          font-family: inherit;
-        }
+        .ct-guilt-btn { flex: 1; border-radius: 10px; font-size: 15px; font-weight: 600; padding: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
 
-        .ct-guilt-yes {
-          background: #064e3b;
-          border: 1px solid #10b981;
-          color: #ffffff;
-          box-shadow: 0 0 16px #10b98130;
-        }
+        .ct-guilt-yes { background: #064e3b; border: 1px solid #10b981; color: #ffffff; box-shadow: 0 0 16px #10b98130; }
+        .ct-guilt-yes:hover { background: #065f46; box-shadow: 0 0 24px #10b98150; }
 
-        .ct-guilt-yes:hover {
-          background: #065f46;
-          box-shadow: 0 0 24px #10b98150;
-        }
+        .ct-guilt-no { background: #450a0a; border: 1px solid #ef4444; color: #ffffff; box-shadow: 0 0 16px #ef444430; }
+        .ct-guilt-no:hover { background: #7f1d1d; box-shadow: 0 0 24px #ef444450; }
 
-        .ct-guilt-no {
-          background: #450a0a;
-          border: 1px solid #ef4444;
-          color: #ffffff;
-          box-shadow: 0 0 16px #ef444430;
-        }
-
-        .ct-guilt-no:hover {
-          background: #7f1d1d;
-          box-shadow: 0 0 24px #ef444450;
-        }
-
-        .ct-guilt-warning {
-          font-size: 12px;
-          color: #334d6a;
-          margin-top: 12px;
-          display: block;
-        }
+        .ct-guilt-warning { font-size: 12px; color: #334d6a; margin-top: 12px; display: block; }
       `;
 
       guiltShadow.appendChild(guiltStyle);
@@ -682,7 +497,6 @@
           <span class="ct-guilt-icon">⏰</span>
           <span class="ct-guilt-title">Time's Up!</span>
           <span class="ct-guilt-subtitle">Your session on ${session.site} has ended.</span>
-
           <div class="ct-guilt-stats">
             <div class="ct-guilt-stat">
               <span class="ct-guilt-label">Planned</span>
@@ -693,12 +507,10 @@
               <span class="ct-guilt-value ${isOver ? "ct-over" : "ct-ok"}">${actualMins}m</span>
             </div>
           </div>
-
           <div class="ct-guilt-intention">
             <span class="ct-guilt-intention-label">Your intention was:</span>
             <span class="ct-guilt-intention-text">"${session.intention}"</span>
           </div>
-
           ${
             snoozeCount > 0
               ? `
@@ -708,37 +520,33 @@
           `
               : ""
           }
-
           <span class="ct-guilt-question">Did you actually do what you said?</span>
-
           <div class="ct-guilt-buttons">
-            <button class="ct-guilt-btn ct-guilt-yes" id="ct-guilt-yes">
-              ✅ Yes, I did
-            </button>
-            <button class="ct-guilt-btn ct-guilt-no" id="ct-guilt-no">
-              ❌ No, I didn't
-            </button>
+            <button class="ct-guilt-btn ct-guilt-yes" id="ct-guilt-yes">✅ Yes, I did</button>
+            <button class="ct-guilt-btn ct-guilt-no" id="ct-guilt-no">❌ No, I didn't</button>
           </div>
-
-          <span class="ct-guilt-warning">
-            Saying No will lock this site for 10 minutes ❄️
-          </span>
+          <span class="ct-guilt-warning">Saying No will lock this site for 10 minutes ❄️</span>
         </div>
       `;
 
       guiltShadow.appendChild(guiltScreen);
       document.documentElement.appendChild(guiltHost);
 
-      // Prevent Escape key from dismissing (Bug 14 fix)
-      document.addEventListener("keydown", blockEscape);
+      // Block Escape key
       function blockEscape(e) {
         if (e.key === "Escape") {
           e.preventDefault();
           e.stopPropagation();
         }
       }
+      document.addEventListener("keydown", blockEscape);
+
+      // Block yes/no from being clicked twice
+      let sessionEnded = false;
 
       function endSession(keptPromise) {
+        if (sessionEnded) return;
+        sessionEnded = true;
         document.removeEventListener("keydown", blockEscape);
         chrome.runtime.sendMessage({ type: "END_SESSION", keptPromise }, () => {
           guiltHost.remove();
@@ -749,15 +557,10 @@
 
       guiltShadow
         .getElementById("ct-guilt-yes")
-        .addEventListener("click", () => {
-          endSession(true);
-        });
-
+        .addEventListener("click", () => endSession(true));
       guiltShadow
         .getElementById("ct-guilt-no")
-        .addEventListener("click", () => {
-          endSession(false);
-        });
+        .addEventListener("click", () => endSession(false));
     }
   }
 })();
