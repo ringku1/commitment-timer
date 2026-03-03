@@ -1,8 +1,11 @@
+const manifest = chrome.runtime.getManifest();
+const version = manifest.version;
+
 chrome.storage.sync.get(
   ["onboardingDone", "stats", "extensionEnabled"],
   (data) => {
     const onboardingDone = data.onboardingDone || false;
-    const isEnabled = data.extensionEnabled !== false; // default ON
+    const isEnabled = data.extensionEnabled !== false;
 
     if (!onboardingDone) {
       showOnboarding();
@@ -37,6 +40,10 @@ function showOnboarding() {
 function showMain(statsData, isEnabled) {
   document.getElementById("main").style.display = "block";
 
+  // Show version
+  const versionEl = document.getElementById("version-label");
+  if (versionEl) versionEl.textContent = `v${version}`;
+
   const stats = statsData || {
     totalSessions: 0,
     keptPromises: 0,
@@ -60,7 +67,7 @@ function showMain(statsData, isEnabled) {
   document.getElementById("honesty-score").textContent =
     score + "% follow-through";
 
-  // Toggle state
+  // Toggle
   const toggle = document.getElementById("toggle");
   const toggleLabel = document.getElementById("toggle-label");
   const enabledContent = document.getElementById("enabled-content");
