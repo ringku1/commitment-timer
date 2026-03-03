@@ -28,18 +28,14 @@ browser.runtime.onInstalled.addListener(() => {
 });
 
 function injectIntercept(tabId) {
-  browser.tabs
-    .insertCSS(tabId, { file: "content/intercept.css" })
-    .catch(() => {});
+  // Only JS needed — Shadow DOM handles styles
   browser.tabs
     .executeScript(tabId, { file: "content/intercept.js" })
     .catch(() => {});
 }
 
 function injectWidget(tabId) {
-  browser.tabs
-    .insertCSS(tabId, { file: "content/timer-widget.css" })
-    .catch(() => {});
+  // Only JS needed — Shadow DOM handles styles
   browser.tabs
     .executeScript(tabId, { file: "content/timer-widget.js" })
     .catch(() => {});
@@ -277,6 +273,36 @@ browser.runtime.onMessage.addListener((message, sender) => {
       return { expiresAt: cooldowns[site] || null };
     });
   }
+
+  if (message.type === "CLEANUP_SESSION") {
+    const { tabId } = message;
+    return browser.storage.sync.get("activeSessions").then((data) => {
+      const activeSessions = data.activeSessions || {};
+      if (activeSessions[tabId]) {
+        delete activeSessions[tabId];
+        browser.storage.sync.set({ activeSessions });
+      }
+      browser.alarms.clear(`session_${tabId}`);
+      browser.alarms.clear(`overstay_${tabId}`);
+      browser.alarms.clear(`warning_${tabId}`);
+      return { success: true };
+    });
+  }
+});
+
+// ─── CLOSED TAB CLEANUP ───────────────────────────────────────────────────────
+
+browser.tabs.onRemoved.addListener((tabId) => {
+  browser.storage.sync.get("activeSessions").then((data) => {
+    const activeSessions = data.activeSessions || {};
+    if (activeSessions[tabId]) {
+      delete activeSessions[tabId];
+      browser.storage.sync.set({ activeSessions });
+      browser.alarms.clear(`session_${tabId}`);
+      browser.alarms.clear(`overstay_${tabId}`);
+      browser.alarms.clear(`warning_${tabId}`);
+    }
+  });
 });
 
 // ─── AUTO BREAK (OVERSTAY) ───────────────────────────────────────────────────
@@ -339,10 +365,12 @@ function autoBreakSession(tabId) {
       browser.tabs
         .executeScript(tabId, {
           code: `
-        const w = document.getElementById("ct-widget");
-        const g = document.getElementById("ct-guilt");
+        const w = document.getElementById("ct-widget-host");
+        const g = document.getElementById("ct-guilt-host");
+        const s = document.getElementById("ct-snooze-host");
         if (w) w.remove();
         if (g) g.remove();
+        if (s) s.remove();
 
         const overlay = document.createElement("div");
         overlay.style.cssText = "position:fixed;inset:0;background:rgba(7,11,20,0.98);display:flex;align-items:center;justify-content:center;z-index:9999999;font-family:sans-serif;flex-direction:column;gap:12px;text-align:center;padding:20px;";

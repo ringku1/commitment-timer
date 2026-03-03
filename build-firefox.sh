@@ -6,9 +6,10 @@ rm -rf firefox-build
 mkdir -p firefox-build/{background,content,popup,options,dashboard,assets,docs/images}
 
 # Copy all source files
-cp -r background/* firefox-build/background/
-cp -r content/* firefox-build/content/
-cp -r assets/* firefox-build/assets/
+cp background/service-worker-firefox.js firefox-build/background/
+cp content/intercept.js firefox-build/content/
+cp content/timer-widget.js firefox-build/content/
+cp assets/* firefox-build/assets/
 cp browser-polyfill.js firefox-build/
 
 # Copy HTML/JS files
@@ -21,7 +22,7 @@ cp dashboard/dashboard.js firefox-build/dashboard/
 
 # Copy docs
 cp docs/privacy-policy.html firefox-build/docs/
-cp docs/images/* firefox-build/docs/images/
+cp docs/images/* firefox-build/docs/images/ 2>/dev/null || true
 
 # Use Firefox manifest
 cp manifest.firefox.json firefox-build/manifest.json
@@ -30,9 +31,6 @@ cp manifest.firefox.json firefox-build/manifest.json
 for f in firefox-build/popup/popup.html firefox-build/options/options.html firefox-build/dashboard/dashboard.html; do
   sed -i 's|<head>|<head>\n  <script src="../browser-polyfill.js"></script>|' "$f"
 done
-
-# Fix popup polyfill path (popup is one level deep)
-sed -i 's|src="../browser-polyfill.js"|src="../browser-polyfill.js"|' firefox-build/popup/popup.html
 
 echo "✅ Firefox build ready in firefox-build/"
 echo ""
