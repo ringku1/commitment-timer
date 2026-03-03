@@ -14,7 +14,21 @@ distracting sites like YouTube, Reddit, or Twitter — then holds you accountabl
 - ⏸️ Snooze tax — extensions get progressively harder
 - ❄️ Cooldown penalty — break a promise, site locked 10 mins
 - 📊 Dashboard with honesty score + 30-day calendar
+- 🔔 Desktop notifications — 1 min warning + time's up alert
 - 🔘 Enable/disable toggle anytime
+
+---
+
+## 🌐 Supported Browsers
+
+| Browser                                                    | Support       |
+| ---------------------------------------------------------- | ------------- |
+| ![Chrome](https://img.shields.io/badge/Chrome-✅-green)    | Full support  |
+| ![Edge](https://img.shields.io/badge/Edge-✅-green)        | Full support  |
+| ![Brave](https://img.shields.io/badge/Brave-✅-green)      | Full support  |
+| ![Opera](https://img.shields.io/badge/Opera-✅-green)      | Full support  |
+| ![Firefox](https://img.shields.io/badge/Firefox-🔜-yellow) | Coming soon   |
+| ![Safari](https://img.shields.io/badge/Safari-❌-red)      | Not supported |
 
 ---
 
@@ -36,15 +50,23 @@ Find the ZIP in your Downloads folder → right-click → **Extract All**
 
 ---
 
-### Step 3 — Load in Chrome
+### Step 3 — Load in your browser
 
 ![Step 3](docs/images/install-step3.png)
 
-1. Open Chrome → go to `chrome://extensions`
-2. Enable **Developer mode** (top right toggle)
-3. Click **Load unpacked**
-4. Select the extracted `Commitment Timer` folder
-5. ✅ Done!
+Open your browser and go to the extensions page:
+
+| Browser | URL                   |
+| ------- | --------------------- |
+| Chrome  | `chrome://extensions` |
+| Edge    | `edge://extensions`   |
+| Brave   | `brave://extensions`  |
+| Opera   | `opera://extensions`  |
+
+1. Enable **Developer mode** (top right toggle)
+2. Click **Load unpacked**
+3. Select the extracted `Commitment Timer` folder
+4. ✅ Done!
 
 ---
 
@@ -57,7 +79,7 @@ You can add/remove sites via the extension settings ⚙️
 ## 🛡️ Privacy
 
 Everything stays on your device. No data is collected or transmitted ever.
-[Privacy Policy](https://ringku1.github.io/commitment-timer/privacy-policy.html)
+[Privacy Policy](https://YOUR_USERNAME.github.io/commitment-timer/privacy-policy.html)
 
 ## 📄 License
 
