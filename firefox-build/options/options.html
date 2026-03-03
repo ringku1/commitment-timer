@@ -11,118 +11,271 @@
         padding: 0;
       }
       body {
-        background: #0a0a0f;
+        background: #070b14;
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         color: #ffffff;
         padding: 40px 20px;
-        max-width: 560px;
+        max-width: 600px;
         margin: 0 auto;
       }
+
       h1 {
-        font-size: 24px;
+        font-size: 28px;
         font-weight: 800;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
       }
       .sub {
-        color: #8888aa;
+        color: #7aa0c0;
         font-size: 14px;
         margin-bottom: 32px;
       }
+
+      .section {
+        background: #0d1526;
+        border: 1px solid #1a2d4a;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+
       .section-title {
         font-size: 13px;
         font-weight: 600;
-        color: #8888aa;
+        color: #334d6a;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
       }
+
       .site-list {
         display: flex;
         flex-direction: column;
         gap: 8px;
         margin-bottom: 16px;
       }
-      .site-item {
+
+      .site-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: #13131a;
-        border: 1px solid #2a2a3a;
-        border-radius: 10px;
-        padding: 12px 16px;
+        background: #0a1220;
+        border: 1px solid #1a2d4a;
+        border-radius: 8px;
+        padding: 10px 14px;
+        transition: border-color 0.2s;
       }
+
+      .site-row:hover {
+        border-color: #0ea5e960;
+      }
+
       .site-name {
-        font-size: 15px;
-        color: #ccccdd;
+        font-size: 14px;
+        color: #c0d8f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-      .remove-btn {
+
+      .site-name::before {
+        content: "🌐";
+        font-size: 13px;
+      }
+
+      .btn-remove {
         background: none;
-        border: none;
-        color: #55556a;
-        font-size: 18px;
+        border: 1px solid #334d6a;
+        border-radius: 6px;
+        color: #334d6a;
+        font-size: 12px;
+        padding: 4px 10px;
         cursor: pointer;
-        line-height: 1;
+        transition: all 0.2s;
+        font-family: inherit;
       }
-      .remove-btn:hover {
+
+      .btn-remove:hover {
+        border-color: #ef4444;
         color: #ef4444;
+        background: #1a0a0a;
+        box-shadow: 0 0 8px #ef444420;
       }
+
       .add-row {
         display: flex;
         gap: 8px;
       }
+
       .add-input {
         flex: 1;
-        background: #1e1e2e;
-        border: 1px solid #2a2a3a;
-        border-radius: 10px;
-        color: #ffffff;
-        font-size: 15px;
+        background: #0a1220;
+        border: 1px solid #1a2d4a;
+        border-radius: 8px;
+        color: #e0f0ff;
+        font-size: 14px;
         padding: 10px 14px;
         outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        font-family: inherit;
       }
+
       .add-input:focus {
-        border-color: #6366f1;
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px #0ea5e920;
       }
-      .add-btn {
-        background: #6366f1;
-        border: none;
-        border-radius: 10px;
+
+      .add-input::placeholder {
+        color: #334d6a;
+      }
+
+      .btn-add {
+        background: linear-gradient(135deg, #0369a1, #0891b2);
+        border: 1px solid #0ea5e9;
+        border-radius: 8px;
         color: #fff;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 700;
         padding: 10px 20px;
         cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        box-shadow: 0 0 12px #0ea5e930;
+        white-space: nowrap;
       }
-      .add-btn:hover {
-        background: #4f46e5;
+
+      .btn-add:hover {
+        background: linear-gradient(135deg, #0284c7, #06b6d4);
+        box-shadow: 0 0 20px #0ea5e950;
       }
-      .saved {
-        color: #22c55e;
+
+      .error-msg {
         font-size: 13px;
-        margin-top: 12px;
+        color: #ef4444;
+        margin-top: 8px;
         display: none;
       }
+
+      .success-msg {
+        font-size: 13px;
+        color: #10b981;
+        margin-top: 8px;
+        display: none;
+      }
+
+      .empty-sites {
+        text-align: center;
+        padding: 20px;
+        color: #334d6a;
+        font-size: 14px;
+      }
+
+      /* Confirm dialog */
+      .confirm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(7, 11, 20, 0.92);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+
+      .confirm-box {
+        background: #0d1526;
+        border: 1px solid #ef4444;
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 360px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 0 30px #ef444430;
+      }
+
+      .confirm-icon {
+        font-size: 36px;
+        margin-bottom: 12px;
+      }
+      .confirm-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+      }
+      .confirm-text {
+        font-size: 14px;
+        color: #7aa0c0;
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+      .confirm-site {
+        color: #06b6d4;
+        font-weight: 700;
+      }
+      .confirm-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .confirm-cancel {
+        flex: 1;
+        background: #0a1220;
+        border: 1px solid #1a2d4a;
+        border-radius: 10px;
+        color: #7aa0c0;
+        font-size: 14px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .confirm-cancel:hover {
+        border-color: #0ea5e9;
+        color: #fff;
+      }
+
+      .confirm-delete {
+        flex: 1;
+        background: #450a0a;
+        border: 1px solid #ef4444;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        box-shadow: 0 0 16px #ef444430;
+      }
+      .confirm-delete:hover {
+        background: #7f1d1d;
+        box-shadow: 0 0 24px #ef444450;
+      }
     </style>
-    <script src="../browser-polyfill.js"></script>
   </head>
   <body>
     <h1>⚙️ Settings</h1>
     <p class="sub">Manage your blocked sites</p>
 
-    <p class="section-title">Blocked Sites</p>
-    <div class="site-list" id="site-list"></div>
-
-    <div class="add-row">
-      <input
-        type="text"
-        class="add-input"
-        id="new-site"
-        placeholder="e.g. netflix.com"
-      />
-      <button class="add-btn" id="add-btn">Add</button>
+    <div class="section">
+      <p class="section-title">Blocked Sites</p>
+      <div class="site-list" id="site-list"></div>
+      <div class="add-row">
+        <input
+          type="text"
+          id="add-input"
+          class="add-input"
+          placeholder="e.g. twitch.tv"
+          maxlength="100"
+        />
+        <button class="btn-add" id="btn-add">+ Add Site</button>
+      </div>
+      <div class="error-msg" id="error-msg"></div>
+      <div class="success-msg" id="success-msg"></div>
     </div>
-    <div class="saved" id="saved-msg">✅ Saved!</div>
 
     <script src="options.js"></script>
   </body>
