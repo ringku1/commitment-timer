@@ -247,24 +247,10 @@
       const widget = document.getElementById("ct-widget");
       if (widget) widget.remove();
 
-      if (!keptPromise) {
-        // Show cooldown message briefly then reload
-        const msg = document.createElement("div");
-        msg.style.cssText = `
-          position:fixed;inset:0;background:#0a0a0f;display:flex;align-items:center;
-          justify-content:center;z-index:999999;font-family:sans-serif;color:#fff;
-          flex-direction:column;gap:12px;
-        `;
-        msg.innerHTML = `
-          <div style="font-size:48px">❄️</div>
-          <div style="font-size:24px;font-weight:800">Cooldown applied.</div>
-          <div style="font-size:15px;color:#8888aa">${window.location.hostname.replace("www.", "")} is locked for 10 minutes.</div>
-        `;
-        document.body.appendChild(msg);
-        setTimeout(() => {
-          window.location.href = "about:blank";
-        }, 2500);
-      }
+      // Always just reload — intercept.js handles everything:
+      // YES → new commitment screen (site is still blocked)
+      // NO  → cooldown screen (penalty already saved to storage)
+      window.location.reload();
     });
   }
 })();
