@@ -1,0 +1,436 @@
+#ct-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #0d1526;
+  border: 1px solid #0ea5e9;
+  border-radius: 12px;
+  padding: 10px 16px;
+  z-index: 999998;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: grab;
+  box-shadow:
+    0 0 0 1px #0ea5e920,
+    0 0 20px #0ea5e930,
+    0 0 60px #0ea5e910;
+  min-width: 150px;
+  user-select: none;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#ct-widget:active {
+  cursor: grabbing;
+}
+
+.ct-widget-intention {
+  font-size: 11px;
+  color: #7aa0c0;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
+}
+
+.ct-widget-timer {
+  font-size: 24px;
+  font-weight: 800;
+  color: #06b6d4;
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 16px #06b6d460;
+}
+
+#ct-widget.ct-widget-warning {
+  border-color: #f97316;
+  box-shadow:
+    0 0 0 1px #f9731620,
+    0 0 20px #f9731640,
+    0 0 60px #f9731615;
+}
+
+#ct-widget.ct-widget-warning .ct-widget-timer {
+  color: #f97316;
+  text-shadow: 0 0 16px #f9731660;
+  animation: ct-pulse 1s infinite;
+}
+
+#ct-widget.ct-widget-expired {
+  border-color: #ef4444;
+  box-shadow: 0 0 20px #ef444440;
+}
+
+#ct-widget.ct-widget-expired .ct-widget-timer {
+  color: #ef4444;
+  text-shadow: 0 0 16px #ef444460;
+}
+
+@keyframes ct-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Snooze button */
+.ct-widget-snooze {
+  background: #0a1220;
+  border: 1px solid #1a2d4a;
+  border-radius: 6px;
+  color: #7aa0c0;
+  font-size: 11px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.ct-widget-snooze:hover:not(:disabled) {
+  border-color: #f97316;
+  color: #f97316;
+  box-shadow: 0 0 10px #f9731630;
+}
+
+.ct-widget-snooze:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Guilt Screen */
+#ct-guilt {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 11, 20, 0.97);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 20px;
+}
+
+.ct-guilt-box {
+  background: #0d1526;
+  border: 1px solid #0ea5e9;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow:
+    0 0 0 1px #0ea5e915,
+    0 0 40px #0ea5e925,
+    0 0 100px #0ea5e910;
+}
+
+.ct-guilt-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.ct-guilt-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+  text-shadow: 0 0 20px #0ea5e940;
+}
+
+.ct-guilt-subtitle {
+  font-size: 15px;
+  color: #7aa0c0;
+  margin-bottom: 24px;
+}
+
+.ct-guilt-stats {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.ct-guilt-stat {
+  background: #0a1220;
+  border: 1px solid #1a2d4a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.ct-guilt-label {
+  font-size: 11px;
+  color: #334d6a;
+}
+
+.ct-guilt-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.ct-guilt-value.ct-over {
+  color: #ef4444;
+  text-shadow: 0 0 10px #ef444440;
+}
+
+.ct-guilt-value.ct-ok {
+  color: #10b981;
+  text-shadow: 0 0 10px #10b98140;
+}
+
+.ct-guilt-intention {
+  background: #0a1220;
+  border: 1px solid #1a2d4a;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.ct-guilt-intention-text {
+  font-size: 14px;
+  color: #06b6d4;
+  font-style: italic;
+  margin-top: 4px;
+  text-shadow: 0 0 10px #06b6d430;
+}
+
+.ct-guilt-snooze-warning {
+  background: #1a1000;
+  border: 1px solid #f97316;
+  border-radius: 8px;
+  color: #f97316;
+  font-size: 13px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  text-align: left;
+  box-shadow: 0 0 12px #f9731620;
+}
+
+.ct-guilt-question {
+  font-size: 16px;
+  color: #c0d8f0;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.ct-guilt-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.ct-guilt-btn {
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ct-guilt-yes {
+  background: #064e3b;
+  border: 1px solid #10b981;
+  color: #ffffff;
+  box-shadow: 0 0 16px #10b98130;
+}
+
+.ct-guilt-yes:hover {
+  background: #065f46;
+  box-shadow: 0 0 24px #10b98150;
+}
+
+.ct-guilt-no {
+  background: #450a0a;
+  border: 1px solid #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 16px #ef444430;
+}
+
+.ct-guilt-no:hover {
+  background: #7f1d1d;
+  box-shadow: 0 0 24px #ef444450;
+}
+
+.ct-guilt-warning {
+  font-size: 12px;
+  color: #334d6a;
+  margin-top: 12px;
+}
+
+/* Snooze Tax Screen */
+#ct-snooze-screen {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 11, 20, 0.97);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 20px;
+}
+
+.ct-snooze-box {
+  background: #0d1526;
+  border: 1px solid #f97316;
+  border-radius: 16px;
+  padding: 36px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  box-shadow:
+    0 0 0 1px #f9731615,
+    0 0 30px #f9731630,
+    0 0 80px #f9731610;
+}
+
+.ct-snooze-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.ct-snooze-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #f97316;
+  margin-bottom: 6px;
+  text-shadow: 0 0 16px #f9731650;
+}
+
+.ct-snooze-sub {
+  font-size: 14px;
+  color: #7aa0c0;
+  margin-bottom: 20px;
+}
+
+.ct-snooze-terms {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.ct-snooze-term {
+  background: #0a1220;
+  border: 1px solid #1a2d4a;
+  border-radius: 10px;
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ct-snooze-term-label {
+  font-size: 11px;
+  color: #334d6a;
+}
+.ct-snooze-term-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.ct-snooze-term-value.ct-red {
+  color: #ef4444;
+  text-shadow: 0 0 10px #ef444440;
+}
+
+.ct-snooze-prompt {
+  font-size: 14px;
+  color: #c0d8f0;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.ct-snooze-textarea {
+  width: 100%;
+  background: #0a1220;
+  border: 1px solid #1a2d4a;
+  border-radius: 10px;
+  color: #e0f0ff;
+  font-size: 14px;
+  padding: 12px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  margin-bottom: 6px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.ct-snooze-textarea:focus {
+  border-color: #f97316;
+  box-shadow:
+    0 0 0 3px #f9731620,
+    0 0 16px #f9731620;
+}
+
+.ct-snooze-char-count {
+  font-size: 12px;
+  color: #334d6a;
+  text-align: right;
+  margin-bottom: 16px;
+}
+
+.ct-snooze-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.ct-snooze-btn-cancel {
+  flex: 1;
+  background: #0a1220;
+  border: 1px solid #1a2d4a;
+  border-radius: 10px;
+  color: #7aa0c0;
+  font-size: 14px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ct-snooze-btn-cancel:hover {
+  border-color: #0ea5e9;
+  color: #ffffff;
+}
+
+.ct-snooze-btn-confirm {
+  flex: 2;
+  background: linear-gradient(135deg, #9a3412, #c2410c);
+  border: 1px solid #f97316;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 0 16px #f9731630;
+}
+
+.ct-snooze-btn-confirm:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c2410c, #ea580c);
+  box-shadow: 0 0 24px #f9731650;
+}
+
+.ct-snooze-btn-confirm:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  box-shadow: none;
+}
