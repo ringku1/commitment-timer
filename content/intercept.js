@@ -3,7 +3,6 @@
 
   const site = window.location.hostname.replace("www.", "");
 
-  // Create shadow host — completely isolated from page CSS
   const host = document.createElement("div");
   host.id = "ct-shadow-host";
   host.style.cssText = `
@@ -108,9 +107,7 @@
       box-shadow: 0 0 0 3px #0ea5e920, 0 0 20px #0ea5e920;
     }
 
-    .ct-textarea::placeholder {
-      color: #334d6a;
-    }
+    .ct-textarea::placeholder { color: #334d6a; }
 
     .ct-label {
       font-size: 13px;
@@ -229,7 +226,6 @@
       display: block;
     }
 
-    /* Cooldown screen */
     .ct-cooldown-timer {
       font-size: 56px;
       font-weight: 900;
@@ -252,7 +248,6 @@
 
   shadow.appendChild(style);
 
-  // Check cooldown first
   chrome.runtime.sendMessage({ type: "GET_COOLDOWN", site }, (response) => {
     const cooldownExpiry = response && response.expiresAt;
     if (cooldownExpiry && cooldownExpiry > Date.now()) {
@@ -309,7 +304,7 @@
         <div class="ct-icon">🔒</div>
         <h1 class="ct-title">Hold on.</h1>
         <p class="ct-subtitle">Why are you visiting <strong>${site}</strong>?</p>
-        <p class="ct-hint">Be specific. Vague reasons will be rejected.</p>
+        <p class="ct-hint">Be specific. At least 3 words. No vague reasons.</p>
 
         <textarea
           id="ct-intention"
@@ -332,7 +327,7 @@
           type="number"
           id="ct-custom-input"
           class="ct-custom-input hidden"
-          placeholder="Enter minutes"
+          placeholder="Enter minutes (1–120)"
           min="1"
           max="120"
         />
@@ -360,12 +355,15 @@
           .forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
         const customInput = shadow.getElementById("ct-custom-input");
+        const errorEl = shadow.getElementById("ct-error");
+
         if (btn.dataset.mins === "custom") {
           customInput.classList.remove("hidden");
           customInput.focus();
           selectedMins = null;
         } else {
           customInput.classList.add("hidden");
+          errorEl.classList.add("hidden");
           selectedMins = parseInt(btn.dataset.mins);
         }
         validateForm();
@@ -373,7 +371,18 @@
     });
 
     shadow.getElementById("ct-custom-input").addEventListener("input", (e) => {
-      selectedMins = parseInt(e.target.value) || null;
+      const val = parseInt(e.target.value);
+      const errorEl = shadow.getElementById("ct-error");
+
+      if (e.target.value && (val < 1 || val > 120 || isNaN(val))) {
+        errorEl.textContent =
+          "❌ Please enter a number between 1 and 120 minutes.";
+        errorEl.classList.remove("hidden");
+        selectedMins = null;
+      } else {
+        errorEl.classList.add("hidden");
+        selectedMins = val || null;
+      }
       validateForm();
     });
 
@@ -392,23 +401,74 @@
       const errorEl = shadow.getElementById("ct-error");
 
       const vagueWords = [
+        // Classic bypasses
         "nothing",
+        "idk",
+        "dunno",
         "just browse",
         "bored",
         "fun",
         "random",
-        "idk",
-        "dunno",
         "chill",
         "scroll",
+        "browse",
+        // Vague check-ins
+        "just check",
+        "just look",
+        "just see",
+        "just visit",
+        "check it out",
+        "see what",
+        "look around",
+        "look at",
+        "see if",
+        "check if",
+        "check my",
+        "check the",
+        // Curiosity bypasses
+        "curious",
+        "maybe",
+        "perhaps",
+        "might",
+        "waste time",
+        "kill time",
+        "free time",
+        "spare time",
+        // Minimal effort
+        "stuff",
+        "things",
+        "whatever",
+        "anything",
+        "relax",
+        "rest",
+        "chill out",
+        "hang out",
+        // Vague entertainment
+        "watch something",
+        "see something",
+        "find something",
+        "look for something",
+        "search for something",
+        // Procrastination
+        "procrastin",
+        "take a break",
+        "quick break",
+        "few minutes",
+        "just a min",
+        "just for a bit",
+        "just quickly",
+        "real quick",
       ];
-      const isVague = vagueWords.some((w) =>
-        intention.toLowerCase().includes(w),
-      );
 
-      if (isVague) {
-        errorEl.textContent =
-          "❌ Too vague. Be specific about what you're looking for.";
+      const intentionLower = intention.toLowerCase();
+      const isVague = vagueWords.some((w) => intentionLower.includes(w));
+      const wordCount = intention.trim().split(/\s+/).length;
+      const isTooShort = wordCount < 3;
+
+      if (isVague || isTooShort) {
+        errorEl.textContent = isVague
+          ? "❌ Too vague. Be specific about what you're looking for."
+          : "❌ Too short. Use at least 3 words to describe your intention.";
         errorEl.classList.remove("hidden");
         return;
       }
