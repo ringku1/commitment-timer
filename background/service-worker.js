@@ -50,7 +50,7 @@ function handleNavigation(details) {
         if (!isBlocked) return;
 
         if (cooldowns[hostname] && cooldowns[hostname] > Date.now()) {
-          // Inject intercept only — no CSS needed (Shadow DOM handles it)
+          // Only JS needed — Shadow DOM handles styles
           chrome.scripting
             .executeScript({
               target: { tabId: details.tabId },
@@ -67,20 +67,15 @@ function handleNavigation(details) {
           tabSession.expiresAt > Date.now();
 
         if (hasActiveSession) {
+          // Only JS needed — Shadow DOM handles styles
           chrome.scripting
             .executeScript({
               target: { tabId: details.tabId },
               files: ["content/timer-widget.js"],
             })
             .catch(() => {});
-          chrome.scripting
-            .insertCSS({
-              target: { tabId: details.tabId },
-              files: ["content/timer-widget.css"],
-            })
-            .catch(() => {});
         } else {
-          // Inject intercept only — no CSS needed (Shadow DOM handles it)
+          // Only JS needed — Shadow DOM handles styles
           chrome.scripting
             .executeScript({
               target: { tabId: details.tabId },
@@ -289,7 +284,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  // ─── CLEAN UP CLOSED TAB SESSION (Bug 7 fix) ─────────────────────────────
   if (message.type === "CLEANUP_SESSION") {
     const { tabId } = message;
     chrome.storage.sync.get("activeSessions", (data) => {
@@ -309,7 +303,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
-// ─── CLOSED TAB CLEANUP (Bug 7) ──────────────────────────────────────────────
+// ─── CLOSED TAB CLEANUP ───────────────────────────────────────────────────────
+
 chrome.tabs.onRemoved.addListener((tabId) => {
   chrome.storage.sync.get("activeSessions", (data) => {
     const activeSessions = data.activeSessions || {};
@@ -384,10 +379,12 @@ function autoBreakSession(tabId) {
         .executeScript({
           target: { tabId },
           func: (site) => {
-            const w = document.getElementById("ct-widget");
-            const g = document.getElementById("ct-guilt");
+            const w = document.getElementById("ct-widget-host");
+            const g = document.getElementById("ct-guilt-host");
+            const s = document.getElementById("ct-snooze-host");
             if (w) w.remove();
             if (g) g.remove();
+            if (s) s.remove();
 
             const overlay = document.createElement("div");
             overlay.style.cssText = `
