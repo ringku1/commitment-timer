@@ -20,7 +20,8 @@
     "*://*.instagram.com/*",
     "*://*.tiktok.com/*",
     "*://*.facebook.com/*",
-    "*://*.x.com/*"
+    "*://*.x.com/*",
+    "<all_urls>"
   ],
 
   "background": {
