@@ -50,16 +50,11 @@ function handleNavigation(details) {
         if (!isBlocked) return;
 
         if (cooldowns[hostname] && cooldowns[hostname] > Date.now()) {
+          // Inject intercept only — no CSS needed (Shadow DOM handles it)
           chrome.scripting
             .executeScript({
               target: { tabId: details.tabId },
               files: ["content/intercept.js"],
-            })
-            .catch(() => {});
-          chrome.scripting
-            .insertCSS({
-              target: { tabId: details.tabId },
-              files: ["content/intercept.css"],
             })
             .catch(() => {});
           return;
@@ -85,16 +80,11 @@ function handleNavigation(details) {
             })
             .catch(() => {});
         } else {
+          // Inject intercept only — no CSS needed (Shadow DOM handles it)
           chrome.scripting
             .executeScript({
               target: { tabId: details.tabId },
               files: ["content/intercept.js"],
-            })
-            .catch(() => {});
-          chrome.scripting
-            .insertCSS({
-              target: { tabId: details.tabId },
-              files: ["content/intercept.css"],
             })
             .catch(() => {});
         }
@@ -121,7 +111,6 @@ function showNotification(notifId, title, message) {
 
 chrome.notifications.onClicked.addListener((notifId) => {
   chrome.notifications.clear(notifId);
-
   if (notifId.startsWith("session_") || notifId.startsWith("warning_")) {
     const tabId = parseInt(
       notifId.replace("session_", "").replace("warning_", ""),
@@ -160,7 +149,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       delayInMinutes: durationMins * 2,
     });
 
-    // 1 min warning — only if session longer than 1 min
     if (durationMins > 1) {
       chrome.alarms.create(`warning_${tabId}`, {
         delayInMinutes: durationMins - 1,
@@ -301,7 +289,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  // ─── CLEAN UP CLOSED TAB SESSION (Bug 7 fix) ─────────────────────────────
+  if (message.type === "CLEANUP_SESSION") {
+    const { tabId } = message;
+    chrome.storage.sync.get("activeSessions", (data) => {
+      const activeSessions = data.activeSessions || {};
+      if (activeSessions[tabId]) {
+        delete activeSessions[tabId];
+        chrome.storage.sync.set({ activeSessions });
+      }
+    });
+    chrome.alarms.clear(`session_${tabId}`);
+    chrome.alarms.clear(`overstay_${tabId}`);
+    chrome.alarms.clear(`warning_${tabId}`);
+    sendResponse({ success: true });
+    return true;
+  }
+
   return true;
+});
+
+// ─── CLOSED TAB CLEANUP (Bug 7) ──────────────────────────────────────────────
+chrome.tabs.onRemoved.addListener((tabId) => {
+  chrome.storage.sync.get("activeSessions", (data) => {
+    const activeSessions = data.activeSessions || {};
+    if (activeSessions[tabId]) {
+      delete activeSessions[tabId];
+      chrome.storage.sync.set({ activeSessions });
+      chrome.alarms.clear(`session_${tabId}`);
+      chrome.alarms.clear(`overstay_${tabId}`);
+      chrome.alarms.clear(`warning_${tabId}`);
+    }
+  });
 });
 
 // ─── AUTO BREAK (OVERSTAY) ───────────────────────────────────────────────────
@@ -459,7 +478,6 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
   if (alarm.name.startsWith("session_")) {
     const tabId = parseInt(alarm.name.replace("session_", ""));
-
     chrome.storage.sync.get("activeSessions", (data) => {
       const activeSessions = data.activeSessions || {};
       const session = activeSessions[tabId];
@@ -484,7 +502,6 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
   if (alarm.name.startsWith("warning_")) {
     const tabId = parseInt(alarm.name.replace("warning_", ""));
-
     chrome.storage.sync.get("activeSessions", (data) => {
       const activeSessions = data.activeSessions || {};
       const session = activeSessions[tabId];
