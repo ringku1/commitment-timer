@@ -18,10 +18,17 @@
         max-width: 700px;
         margin: 0 auto;
       }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+
       h1 {
         font-size: 28px;
         font-weight: 800;
-        margin-bottom: 4px;
       }
       .sub {
         color: #7aa0c0;
@@ -156,10 +163,10 @@
         color: #334d6a;
         font-weight: 600;
         transition: transform 0.1s;
+        cursor: default;
       }
       .cal-day:hover {
         transform: scale(1.2);
-        cursor: default;
       }
       .cal-kept {
         background: #0c3b2e;
@@ -178,7 +185,6 @@
         border: 1px solid #1a2d4a;
       }
 
-      /* Calendar legend */
       .cal-legend {
         display: flex;
         gap: 16px;
@@ -199,6 +205,30 @@
       }
 
       /* Sessions */
+      .sessions-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .btn-clear {
+        background: #1a0a0a;
+        border: 1px solid #ef444460;
+        border-radius: 8px;
+        color: #ef4444;
+        font-size: 12px;
+        padding: 6px 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .btn-clear:hover {
+        border-color: #ef4444;
+        box-shadow: 0 0 12px #ef444430;
+        background: #2a0a0a;
+      }
+
       .session-list {
         display: flex;
         flex-direction: column;
@@ -289,11 +319,87 @@
       .empty-text strong {
         color: #06b6d4;
       }
+
+      /* Confirm dialog */
+      .confirm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(7, 11, 20, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      .confirm-box {
+        background: #0d1526;
+        border: 1px solid #ef4444;
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 380px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 0 30px #ef444430;
+      }
+      .confirm-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+      .confirm-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+      }
+      .confirm-text {
+        font-size: 14px;
+        color: #7aa0c0;
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+      .confirm-buttons {
+        display: flex;
+        gap: 10px;
+      }
+      .confirm-cancel {
+        flex: 1;
+        background: #0a1220;
+        border: 1px solid #1a2d4a;
+        border-radius: 10px;
+        color: #7aa0c0;
+        font-size: 14px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .confirm-cancel:hover {
+        border-color: #0ea5e9;
+        color: #fff;
+      }
+      .confirm-delete {
+        flex: 1;
+        background: #450a0a;
+        border: 1px solid #ef4444;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        box-shadow: 0 0 16px #ef444430;
+      }
+      .confirm-delete:hover {
+        background: #7f1d1d;
+        box-shadow: 0 0 24px #ef444450;
+      }
     </style>
-    <script src="../browser-polyfill.js"></script>
   </head>
   <body>
-    <h1>📊 Dashboard</h1>
+    <div class="page-header">
+      <h1>📊 Dashboard</h1>
+    </div>
     <p class="sub">Your commitment history</p>
 
     <div class="top-grid">
@@ -357,7 +463,11 @@
       </div>
     </div>
 
-    <p class="section-title">Recent Sessions</p>
+    <div class="sessions-header">
+      <p class="section-title" style="margin: 0">Recent Sessions</p>
+      <button class="btn-clear" id="btn-clear">🗑 Clear History</button>
+    </div>
+
     <div class="session-list" id="session-list"></div>
 
     <script src="dashboard.js"></script>

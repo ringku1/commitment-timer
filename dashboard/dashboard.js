@@ -6,6 +6,10 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
     bestStreak: 0,
   };
   const sessions = data.sessions || [];
+  renderDashboard(stats, sessions);
+});
+
+function renderDashboard(stats, sessions) {
   const score =
     stats.totalSessions > 0
       ? Math.round((stats.keptPromises / stats.totalSessions) * 100)
@@ -13,7 +17,7 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
 
   const streak = stats.currentStreak || 0;
 
-  // Streak card
+  // Streak
   document.getElementById("streak-num").textContent = streak;
   document.getElementById("best-streak").textContent = stats.bestStreak || 0;
   document.getElementById("streak-emoji").textContent =
@@ -29,6 +33,7 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
 
   // Calendar
   const calendar = document.getElementById("calendar");
+  calendar.innerHTML = "";
   const dayMap = {};
   sessions.forEach((s) => {
     const d = s.date || new Date(s.timestamp).toDateString();
@@ -45,7 +50,6 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
     day.className = "cal-day";
     day.title = key;
     day.textContent = d.getDate();
-
     if (dayMap[key]) {
       day.classList.add(dayMap[key].kept ? "cal-kept" : "cal-broke");
     } else {
@@ -56,6 +60,7 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
 
   // Session list
   const list = document.getElementById("session-list");
+  list.innerHTML = "";
 
   if (sessions.length === 0) {
     list.innerHTML = `
@@ -69,8 +74,14 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
         </div>
       </div>
     `;
+
+    // Hide clear button when no sessions
+    document.getElementById("btn-clear").style.display = "none";
     return;
   }
+
+  // Show clear button
+  document.getElementById("btn-clear").style.display = "block";
 
   sessions.forEach((s) => {
     const date = new Date(s.timestamp).toLocaleDateString("en-US", {
@@ -92,10 +103,75 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
           ${s.keptPromise ? "✅ Kept" : "❌ Broke"}
         </span>
         ${s.snoozeCount > 0 ? `<div class="session-snooze">⏸️ Snoozed ${s.snoozeCount}x</div>` : ""}
-          ${s.autoBreak ? `<div class="session-snooze" style="color:#ef4444">⏱️ Auto-detected overstay</div>` : ""}
+        ${s.autoBreak ? `<div class="session-snooze" style="color:#ef4444">⏱️ Auto-detected overstay</div>` : ""}
         <div class="session-time" style="margin-top:3px">${date}</div>
       </div>
     `;
     list.appendChild(card);
   });
-});
+
+  // ─── CLEAR HISTORY ────────────────────────────────────────────────────────
+  document.getElementById("btn-clear").addEventListener("click", () => {
+    showConfirmDialog();
+  });
+}
+
+function showConfirmDialog() {
+  const overlay = document.createElement("div");
+  overlay.className = "confirm-overlay";
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">Clear All History?</div>
+      <div class="confirm-text">
+        This will permanently delete all your sessions,
+        stats, streaks and honesty score.<br/><br/>
+        <strong style="color:#ef4444">This cannot be undone.</strong>
+      </div>
+      <div class="confirm-buttons">
+        <button class="confirm-cancel" id="confirm-cancel">Cancel</button>
+        <button class="confirm-delete" id="confirm-delete">Yes, Clear Everything</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById("confirm-cancel").addEventListener("click", () => {
+    overlay.remove();
+  });
+
+  document.getElementById("confirm-delete").addEventListener("click", () => {
+    chrome.storage.sync.set(
+      {
+        sessions: [],
+        stats: {
+          totalSessions: 0,
+          keptPromises: 0,
+          currentStreak: 0,
+          bestStreak: 0,
+        },
+        activeSessions: {},
+        cooldowns: {},
+      },
+      () => {
+        overlay.remove();
+        // Re-render with empty data
+        renderDashboard(
+          {
+            totalSessions: 0,
+            keptPromises: 0,
+            currentStreak: 0,
+            bestStreak: 0,
+          },
+          [],
+        );
+      },
+    );
+  });
+
+  // Click outside to cancel
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+}
