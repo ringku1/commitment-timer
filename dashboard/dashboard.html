@@ -26,10 +26,40 @@
         margin-bottom: 4px;
       }
 
+      .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
       h1 {
         font-size: 28px;
         font-weight: 800;
       }
+
+      .header-btns {
+        display: flex;
+        gap: 8px;
+      }
+
+      .header-btn {
+        background: #0d1526;
+        border: 1px solid #1a2d4a;
+        border-radius: 8px;
+        color: #7aa0c0;
+        font-size: 12px;
+        padding: 7px 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        white-space: nowrap;
+      }
+      .header-btn:hover {
+        border-color: #0ea5e9;
+        color: #ffffff;
+        box-shadow: 0 0 10px #0ea5e925;
+      }
+
       .sub {
         color: #7aa0c0;
         font-size: 14px;
@@ -143,7 +173,6 @@
         text-shadow: 0 0 16px #06b6d440;
       }
 
-      /* Calendar */
       .calendar-wrap {
         margin-bottom: 32px;
       }
@@ -204,7 +233,6 @@
         border-radius: 3px;
       }
 
-      /* Sessions */
       .sessions-header {
         display: flex;
         align-items: center;
@@ -292,7 +320,6 @@
         margin-top: 3px;
       }
 
-      /* Empty state */
       .empty-state {
         text-align: center;
         padding: 60px 20px;
@@ -320,7 +347,6 @@
         color: #06b6d4;
       }
 
-      /* Confirm dialog */
       .confirm-overlay {
         position: fixed;
         inset: 0;
@@ -398,7 +424,13 @@
   </head>
   <body>
     <div class="page-header">
-      <h1>📊 Dashboard</h1>
+      <div class="page-header-left">
+        <h1>📊 Dashboard</h1>
+      </div>
+      <div class="header-btns">
+        <button class="header-btn" id="btn-settings">⚙️ Settings</button>
+        <button class="header-btn" id="btn-close">✕ Close</button>
+      </div>
     </div>
     <p class="sub">Your commitment history</p>
 

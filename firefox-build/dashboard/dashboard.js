@@ -9,6 +9,18 @@ chrome.storage.sync.get(["stats", "sessions"], (data) => {
   renderDashboard(stats, sessions);
 });
 
+// ─── HEADER BUTTONS ──────────────────────────────────────────────────────────
+
+document.getElementById("btn-settings").addEventListener("click", () => {
+  chrome.runtime.openOptionsPage();
+});
+
+document.getElementById("btn-close").addEventListener("click", () => {
+  window.close();
+});
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+
 function renderDashboard(stats, sessions) {
   const score =
     stats.totalSessions > 0
@@ -17,13 +29,11 @@ function renderDashboard(stats, sessions) {
 
   const streak = stats.currentStreak || 0;
 
-  // Streak
   document.getElementById("streak-num").textContent = streak;
   document.getElementById("best-streak").textContent = stats.bestStreak || 0;
   document.getElementById("streak-emoji").textContent =
     streak === 0 ? "💤" : streak < 3 ? "🔥" : streak < 7 ? "🔥🔥" : "🔥🔥🔥";
 
-  // Stats
   document.getElementById("total").textContent = stats.totalSessions;
   document.getElementById("kept").textContent = stats.keptPromises;
   document.getElementById("score").textContent = score + "%";
@@ -74,13 +84,10 @@ function renderDashboard(stats, sessions) {
         </div>
       </div>
     `;
-
-    // Hide clear button when no sessions
     document.getElementById("btn-clear").style.display = "none";
     return;
   }
 
-  // Show clear button
   document.getElementById("btn-clear").style.display = "block";
 
   sessions.forEach((s) => {
@@ -156,7 +163,6 @@ function showConfirmDialog() {
       },
       () => {
         overlay.remove();
-        // Re-render with empty data
         renderDashboard(
           {
             totalSessions: 0,
@@ -170,7 +176,6 @@ function showConfirmDialog() {
     );
   });
 
-  // Click outside to cancel
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) overlay.remove();
   });
