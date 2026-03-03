@@ -46,7 +46,9 @@ function handleNavigation(details) {
         }
         const hostname = url.hostname.replace("www.", "");
 
-        const isBlocked = blockedSites.some((site) => hostname.includes(site));
+        const isBlocked = blockedSites.some(
+          (site) => hostname === site || hostname.endsWith("." + site),
+        );
         if (!isBlocked) return;
 
         if (cooldowns[hostname] && cooldowns[hostname] > Date.now()) {
@@ -151,6 +153,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     sendResponse({ success: true, expiresAt });
+    return true;
   }
 
   if (message.type === "GET_SESSION") {

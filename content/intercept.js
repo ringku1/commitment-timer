@@ -276,6 +276,14 @@
     document.documentElement.appendChild(host);
     document.body.style.overflow = "hidden";
 
+    // Block Escape key on cooldown screen
+    document.addEventListener("keydown", function blockEscape(e) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+
     function updateCooldown() {
       const remaining = expiresAt - Date.now();
       const el = shadow.getElementById("ct-cooldown-timer");
@@ -346,6 +354,14 @@
     document.documentElement.appendChild(host);
     document.body.style.overflow = "hidden";
 
+    // Block Escape key on intention screen
+    document.addEventListener("keydown", function blockEscape(e) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+
     let selectedMins = null;
 
     shadow.querySelectorAll(".ct-time-btn").forEach((btn) => {
@@ -396,7 +412,9 @@
       submitBtn.disabled = !(intention.length >= 10 && selectedMins);
     }
 
+    let submitting = false;
     shadow.getElementById("ct-submit").addEventListener("click", () => {
+      if (submitting) return;
       const intention = shadow.getElementById("ct-intention").value.trim();
       const errorEl = shadow.getElementById("ct-error");
 
@@ -475,6 +493,7 @@
 
       errorEl.classList.add("hidden");
 
+      submitting = true;
       chrome.runtime.sendMessage(
         { type: "START_SESSION", site, intention, durationMins: selectedMins },
         (response) => {
@@ -482,6 +501,8 @@
             host.remove();
             document.body.style.overflow = "";
             window.location.reload();
+          } else {
+            submitting = false;
           }
         },
       );
