@@ -9,18 +9,36 @@
   });
 
   function createWidget(session) {
-    let guiltShown = false; // ← guard flag
+    let guiltShown = false;
+
+    // ─── RESTORE SAVED POSITION ───────────────────────────────────────────
+    let savedPos = null;
+    try {
+      const raw = localStorage.getItem("ct-widget-pos");
+      if (raw) savedPos = JSON.parse(raw);
+    } catch {}
 
     // ─── WIDGET HOST (Shadow DOM) ─────────────────────────────────────────
     const widgetHost = document.createElement("div");
     widgetHost.id = "ct-widget-host";
-    widgetHost.style.cssText = `
-      position: fixed !important;
-      bottom: 20px !important;
-      right: 20px !important;
-      z-index: 2147483647 !important;
-      display: block !important;
-    `;
+
+    if (savedPos) {
+      widgetHost.style.cssText = `
+        position: fixed !important;
+        left: ${savedPos.x}px !important;
+        top: ${savedPos.y}px !important;
+        z-index: 2147483647 !important;
+        display: block !important;
+      `;
+    } else {
+      widgetHost.style.cssText = `
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 2147483647 !important;
+        display: block !important;
+      `;
+    }
 
     const widgetShadow = widgetHost.attachShadow({ mode: "open" });
 
@@ -155,15 +173,36 @@
 
     document.addEventListener("mousemove", (e) => {
       if (!isDragging) return;
-      widgetHost.style.left = e.clientX - dragOffsetX + "px";
-      widgetHost.style.top = e.clientY - dragOffsetY + "px";
+
+      // Keep widget within viewport bounds
+      const rect = widgetHost.getBoundingClientRect();
+      const maxX = window.innerWidth - rect.width;
+      const maxY = window.innerHeight - rect.height;
+      const newX = Math.max(0, Math.min(e.clientX - dragOffsetX, maxX));
+      const newY = Math.max(0, Math.min(e.clientY - dragOffsetY, maxY));
+
+      widgetHost.style.left = newX + "px";
+      widgetHost.style.top = newY + "px";
       widgetHost.style.bottom = "auto";
       widgetHost.style.right = "auto";
     });
 
     document.addEventListener("mouseup", () => {
+      if (!isDragging) return;
       isDragging = false;
       widget.style.cursor = "grab";
+
+      // Save position to localStorage
+      const rect = widgetHost.getBoundingClientRect();
+      try {
+        localStorage.setItem(
+          "ct-widget-pos",
+          JSON.stringify({
+            x: Math.round(rect.left),
+            y: Math.round(rect.top),
+          }),
+        );
+      } catch {}
     });
 
     // ─── COUNTDOWN ────────────────────────────────────────────────────────
@@ -175,7 +214,6 @@
       if (remaining <= 0) {
         display.textContent = "00:00";
         widget.classList.add("ct-expired");
-        // Disable snooze when expired
         const snooze = widgetShadow.getElementById("ct-snooze-btn");
         if (snooze) {
           snooze.disabled = true;
@@ -219,7 +257,6 @@
     updateSnoozeBtn();
 
     snoozeBtn.addEventListener("click", () => {
-      // Block snooze if timer already expired
       if (session.expiresAt <= Date.now()) return;
       if (snoozeCount >= 3) return;
       showSnoozeScreen();
@@ -227,11 +264,10 @@
 
     // ─── TIMER EXPIRED EVENT ──────────────────────────────────────────────
     window.addEventListener("COMMITMENT_TIMER_EXPIRED", () => {
-      if (guiltShown) return; // ← guard — ignore duplicate events
+      if (guiltShown) return;
       guiltShown = true;
       clearInterval(timerInterval);
       widget.classList.add("ct-expired");
-      // Disable snooze immediately
       const snooze = widgetShadow.getElementById("ct-snooze-btn");
       if (snooze) {
         snooze.disabled = true;
@@ -242,7 +278,6 @@
 
     // ─── SNOOZE SCREEN (Shadow DOM) ───────────────────────────────────────
     function showSnoozeScreen() {
-      // Don't show if guilt already shown
       if (guiltShown) return;
 
       const levels = [
@@ -410,7 +445,6 @@
 
     // ─── GUILT SCREEN (Shadow DOM) ────────────────────────────────────────
     function showGuiltScreen() {
-      // Extra guard — don't create if already exists
       if (document.getElementById("ct-guilt-host")) return;
 
       const guiltHost = document.createElement("div");
@@ -541,13 +575,17 @@
       }
       document.addEventListener("keydown", blockEscape);
 
-      // Block yes/no from being clicked twice
+      // Block double click
       let sessionEnded = false;
 
       function endSession(keptPromise) {
         if (sessionEnded) return;
         sessionEnded = true;
         document.removeEventListener("keydown", blockEscape);
+        // Clear saved widget position on session end
+        try {
+          localStorage.removeItem("ct-widget-pos");
+        } catch {}
         chrome.runtime.sendMessage({ type: "END_SESSION", keptPromise }, () => {
           guiltHost.remove();
           widgetHost.remove();
