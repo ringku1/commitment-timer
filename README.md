@@ -15,24 +15,27 @@ distracting sites like YouTube, Reddit, or Twitter — then holds you accountabl
 - ❄️ Cooldown penalty — break a promise, site locked 10 mins
 - 📊 Dashboard with honesty score + 30-day calendar
 - 🔔 Desktop notifications — 1 min warning + time's up alert
+- ⏱️ Overstay detection — auto breaks session at 2x committed time
 - 🔘 Enable/disable toggle anytime
 
 ---
 
 ## 🌐 Supported Browsers
 
-| Browser                                                    | Support       |
-| ---------------------------------------------------------- | ------------- |
-| ![Chrome](https://img.shields.io/badge/Chrome-✅-green)    | Full support  |
-| ![Edge](https://img.shields.io/badge/Edge-✅-green)        | Full support  |
-| ![Brave](https://img.shields.io/badge/Brave-✅-green)      | Full support  |
-| ![Opera](https://img.shields.io/badge/Opera-✅-green)      | Full support  |
-| ![Firefox](https://img.shields.io/badge/Firefox-🔜-yellow) | Coming soon   |
-| ![Safari](https://img.shields.io/badge/Safari-❌-red)      | Not supported |
+| Browser    | Support       | Install URL           |
+| ---------- | ------------- | --------------------- |
+| ✅ Chrome  | Full support  | `chrome://extensions` |
+| ✅ Edge    | Full support  | `edge://extensions`   |
+| ✅ Brave   | Full support  | `brave://extensions`  |
+| ✅ Opera   | Full support  | `opera://extensions`  |
+| ✅ Firefox | Full support  | `about:debugging`     |
+| ❌ Safari  | Not supported | —                     |
 
 ---
 
-## 🚀 Install Guide (2 minutes)
+## 🚀 Install Guide
+
+### Chrome / Edge / Brave / Opera
 
 ### Step 1 — Download
 
@@ -67,6 +70,27 @@ Open your browser and go to the extensions page:
 2. Click **Load unpacked**
 3. Select the extracted `Commitment Timer` folder
 4. ✅ Done!
+
+---
+
+### 🦊 Firefox
+
+1. Download and extract the ZIP as above
+2. Open terminal inside the extracted folder
+3. Run the build script:
+
+```bash
+bash build-firefox.sh
+```
+
+4. Open Firefox → go to `about:debugging`
+5. Click **"This Firefox"**
+6. Click **"Load Temporary Add-on"**
+7. Navigate to `firefox-build/` → select `manifest.json`
+8. ✅ Done!
+
+> **Note:** Firefox temporary add-ons are removed when Firefox closes.
+> Permanent Firefox install coming soon via Firefox Add-ons store.
 
 ---
 
