@@ -1,38 +1,51 @@
 const manifest = chrome.runtime.getManifest();
 const version = manifest.version;
 
+const DEFAULT_BLOCKED_SITES = [
+  "youtube.com",
+  "reddit.com",
+  "twitter.com",
+  "instagram.com",
+  "tiktok.com",
+  "facebook.com",
+  "x.com",
+];
+
 chrome.storage.sync.get(
-  ["onboardingDone", "stats", "extensionEnabled"],
+  ["onboardingDone", "stats", "extensionEnabled", "blockedSites"],
   (data) => {
     const onboardingDone = data.onboardingDone || false;
     const isEnabled = data.extensionEnabled !== false;
+    const blockedSites = data.blockedSites || DEFAULT_BLOCKED_SITES;
 
     if (!onboardingDone) {
-      showOnboarding();
+      showOnboarding(blockedSites, data.stats, isEnabled);
     } else {
       showMain(data.stats, isEnabled);
     }
   },
 );
 
-function showOnboarding() {
+function showOnboarding(blockedSites, statsData, isEnabled) {
   document.getElementById("onboarding").style.display = "block";
+
+  // Populate sites dynamically from storage
+  const sitesList = document.getElementById("ob-sites-list");
+  sitesList.innerHTML = blockedSites
+    .map((site) => `<span class="ob-site-tag">${site}</span>`)
+    .join("");
 
   document.getElementById("ob-got-it").addEventListener("click", () => {
     chrome.storage.sync.set({ onboardingDone: true }, () => {
-      chrome.storage.sync.get(["stats", "extensionEnabled"], (data) => {
-        document.getElementById("onboarding").style.display = "none";
-        showMain(data.stats, data.extensionEnabled !== false);
-      });
+      document.getElementById("onboarding").style.display = "none";
+      showMain(statsData, isEnabled);
     });
   });
 
   document.getElementById("ob-skip").addEventListener("click", () => {
     chrome.storage.sync.set({ onboardingDone: true }, () => {
-      chrome.storage.sync.get(["stats", "extensionEnabled"], (data) => {
-        document.getElementById("onboarding").style.display = "none";
-        showMain(data.stats, data.extensionEnabled !== false);
-      });
+      document.getElementById("onboarding").style.display = "none";
+      showMain(statsData, isEnabled);
     });
   });
 }
@@ -40,7 +53,7 @@ function showOnboarding() {
 function showMain(statsData, isEnabled) {
   document.getElementById("main").style.display = "block";
 
-  // Show version
+  // Version
   const versionEl = document.getElementById("version-label");
   if (versionEl) versionEl.textContent = `v${version}`;
 

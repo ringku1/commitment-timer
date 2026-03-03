@@ -164,7 +164,7 @@
         color: #7aa0c0;
       }
 
-      /* Toggle switch */
+      /* Toggle */
       .toggle-wrap {
         display: flex;
         align-items: center;
@@ -331,7 +331,6 @@
         color: #334d6a;
       }
     </style>
-    <script src="../browser-polyfill.js"></script>
   </head>
   <body>
     <!-- ONBOARDING -->
@@ -374,20 +373,15 @@
         <div class="ob-step">
           <div class="ob-step-num">5</div>
           <div class="ob-step-text">
-            Break a promise → site <strong>locked for 10 minutes. ❄️</strong>
+            Break a promise → site <strong>locked for 10 minutes ❄️</strong>
           </div>
         </div>
       </div>
 
       <div class="ob-sites">
         <div class="ob-sites-label">Currently blocking</div>
-        <div class="ob-sites-list">
-          <span class="ob-site-tag">youtube.com</span>
-          <span class="ob-site-tag">reddit.com</span>
-          <span class="ob-site-tag">twitter.com</span>
-          <span class="ob-site-tag">instagram.com</span>
-          <span class="ob-site-tag">tiktok.com</span>
-          <span class="ob-site-tag">facebook.com</span>
+        <div class="ob-sites-list" id="ob-sites-list">
+          <!-- Populated dynamically from storage -->
         </div>
       </div>
 
