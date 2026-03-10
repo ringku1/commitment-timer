@@ -1,12 +1,10 @@
 # 🔒 Commitment Timer
-
 > Browse with intention, not impulse.
 
 A Chrome extension that forces you to commit to a reason before visiting
 distracting sites like YouTube, Reddit, or Twitter — then holds you accountable.
 
 ## ✨ Features
-
 - 🔒 Intercepts distracting sites with a commitment screen
 - ⏱️ Floating countdown timer while you browse
 - 😬 Guilt screen when time's up — did you keep your promise?
@@ -22,15 +20,14 @@ distracting sites like YouTube, Reddit, or Twitter — then holds you accountabl
 ---
 
 ## 🌐 Supported Browsers
-
-| Browser    | Support       | Install URL                 |
-| ---------- | ------------- | --------------------------- |
-| ✅ Chrome  | Full support  | `chrome://extensions`       |
-| ✅ Edge    | Full support  | `edge://extensions`         |
-| ✅ Brave   | Full support  | `brave://extensions`        |
-| ✅ Opera   | Full support  | `opera://extensions`        |
-| ✅ Firefox | Full support  | `about:debugging`           |
-| ❌ Safari  | Not supported | Extensions API incompatible |
+| Browser    | Support       | Install                                                |
+| ---------- | ------------- | ------------------------------------------------------ |
+| ✅ Chrome  | Full support  | [Manual install](#-install-guide)                      |
+| ✅ Edge    | Full support  | [Manual install](#-install-guide)                      |
+| ✅ Brave   | Full support  | [Manual install](#-install-guide)                      |
+| ✅ Opera   | Full support  | [Manual install](#-install-guide)                      |
+| ✅ Firefox | Full support  | [Firefox Add-ons Store](https://addons.mozilla.org/firefox/addon/commitment-timer/) |
+| ❌ Safari  | Not supported | Extensions API incompatible                            |
 
 ---
 
@@ -39,25 +36,19 @@ distracting sites like YouTube, Reddit, or Twitter — then holds you accountabl
 ### Chrome / Edge / Brave / Opera
 
 ### Step 1 — Download
-
 ![Step 1](docs/images/install-step1.png)
-
 Click the green **Code** button above → **Download ZIP** → save to your computer
 
 ---
 
 ### Step 2 — Extract
-
 ![Step 2](docs/images/install-step2.png)
-
 Find the ZIP in your Downloads folder → right-click → **Extract All**
 
 ---
 
 ### Step 3 — Load in your browser
-
 ![Step 3](docs/images/install-step3.png)
-
 Open your browser and go to the extensions page:
 
 | Browser | URL                   |
@@ -76,36 +67,21 @@ Open your browser and go to the extensions page:
 
 ### 🦊 Firefox
 
-1. Download and extract the ZIP as above
-2. Open terminal inside the extracted folder
-3. Run the build script:
+Install directly from the Firefox Add-ons Store — no manual setup needed:
 
-```bash
-bash build-firefox.sh
-```
-
-4. Open Firefox → go to `about:debugging`
-5. Click **"This Firefox"**
-6. Click **"Load Temporary Add-on"**
-7. Navigate to `firefox-build/` → select `manifest.json`
-8. ✅ Done!
-
-> **Note:** Firefox temporary add-ons are removed when Firefox closes.
-> Permanent Firefox install coming soon via Firefox Add-ons store.
+👉 **[Install for Firefox](https://addons.mozilla.org/firefox/addon/commitment-timer/)**
 
 ---
 
 ## 🌐 Blocked Sites (default)
-
 YouTube · Reddit · Twitter · Instagram · TikTok · Facebook · X
 
 You can add/remove sites via the extension settings ⚙️
 
 ## 🛡️ Privacy
-
 Everything stays on your device. No data is collected or transmitted ever.
+
 [Privacy Policy](https://ringku1.github.io/commitment-timer/privacy-policy.html)
 
 ## 📄 License
-
 MIT
