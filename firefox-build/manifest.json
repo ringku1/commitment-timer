@@ -3,14 +3,16 @@
   "name": "Commitment Timer",
   "version": "1.0.0",
   "description": "Force yourself to commit before visiting distracting sites.",
-
   "browser_specific_settings": {
     "gecko": {
       "id": "commitment-timer@ringku",
-      "strict_min_version": "109.0"
+      "strict_min_version": "109.0",
+      "data_collection_permissions": {
+        "required": ["none"],
+        "optional": []
+      }
     }
   },
-
   "permissions": [
     "webNavigation",
     "storage",
@@ -26,12 +28,10 @@
     "*://*.x.com/*",
     "<all_urls>"
   ],
-
   "background": {
     "scripts": ["browser-polyfill.js", "background/service-worker-firefox.js"],
     "persistent": false
   },
-
   "browser_action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -40,18 +40,15 @@
       "128": "assets/icon128.png"
     }
   },
-
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true
   },
-
   "icons": {
     "16": "assets/icon16.png",
     "48": "assets/icon48.png",
     "128": "assets/icon128.png"
   },
-
   "content_scripts": [
     {
       "matches": [
@@ -67,6 +64,5 @@
       "run_at": "document_start"
     }
   ],
-
   "web_accessible_resources": ["browser-polyfill.js"]
 }
